@@ -83,7 +83,7 @@
         function markPending(id) {
             alert(id);
             $.ajax({
-                url: '/admin/orderdetails/mark-pending',
+                url: '/admin/orderdetails/mark_pending',
                 method: 'post',
                 data: { id },
                 dataType: 'json',
@@ -101,7 +101,7 @@
         function markShipping(id) {
             alert(id);
             $.ajax({
-                url: '/admin/orderdetails/mark-shipping',
+                url: '/admin/orderdetails/mark_shipping',
                 method: 'post',
                 data: { id },
                 dataType: 'json',
@@ -119,7 +119,7 @@
         function markDone(id) {
             alert(id);
             $.ajax({
-                url: '/admin/orderdetails/mark-done',
+                url: '/admin/orderdetails/mark_done',
                 method: 'post',
                 data: { id },
                 dataType: 'json',

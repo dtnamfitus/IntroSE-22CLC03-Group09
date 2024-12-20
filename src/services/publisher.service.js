@@ -5,13 +5,13 @@ const publisherService = {
     return new Promise((resolve, reject) => {
       try {
         const publishers = Publisher.findAll({
-          raw: true
+          raw: true,
         });
         return resolve(publishers);
       } catch (error) {
         return reject(error);
       }
-    })
+    });
   },
 
   getPublisherById: (id) => {
@@ -19,27 +19,27 @@ const publisherService = {
       try {
         const publisher = Publisher.findOne({
           where: {
-            id: id
+            id: id,
           },
-          raw: true
+          raw: true,
         });
         return resolve(publisher);
       } catch (error) {
         return reject(error);
       }
-    })
+    });
   },
-  createNewPublisher: (pubName) =>{
+  createNewPublisher: (pubName) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const publisher = Publisher.create({ name: pubName});
+        const publisher = Publisher.create({ name: pubName });
         return resolve(publisher);
       } catch (error) {
         return reject(error);
       }
-    })
+    });
   },
-  UpdatePublisher: (pubName, pubId) =>{
+  UpdatePublisher: (pubName, pubId) => {
     return new Promise(async (resolve, reject) => {
       try {
         const publisher = Publisher.update(
@@ -48,26 +48,26 @@ const publisherService = {
           },
           {
             where: { id: pubId },
-          });
+          }
+        );
         return resolve(publisher);
       } catch (error) {
         return reject(error);
       }
-    })
+    });
   },
-  deletePublisher: (pubId) =>{
+  deletePublisher: (pubId) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const publisher = Publisher.destroy(
-          {
-            where: { id: pubId },
-          });
+        const publisher = Publisher.destroy({
+          where: { id: pubId },
+        });
         return resolve(publisher);
       } catch (error) {
         return reject(error);
       }
-    })
-  }
-}
+    });
+  },
+};
 
 module.exports = publisherService;

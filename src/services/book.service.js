@@ -10,7 +10,7 @@ const bookService = {
       } catch (error) {
         return reject(error);
       }
-    })
+    });
   },
   getBookById: (id) => {
     return new Promise(async (resolve, reject) => {
@@ -18,16 +18,16 @@ const bookService = {
         const book = await Book.findOne({
           where: {
             id: {
-              $eq: id
-            }
+              $eq: id,
+            },
           },
-          raw: true
+          raw: true,
         });
         return resolve(book);
       } catch (error) {
         return reject(error);
       }
-    })
+    });
   },
 
   searchBook: (query, from, to) => {
@@ -38,33 +38,31 @@ const bookService = {
             $and: [
               {
                 title: {
-                  $substring: `${query.name}`
-                }
+                  $substring: `${query.name}`,
+                },
               },
               {
-                categoryId: (query.cat == 0) ?
-                  { $ne: null } :
-                  { $eq: query.cat }
+                categoryId: query.cat == 0 ? { $ne: null } : { $eq: query.cat },
               },
               {
-                price:{
-                  $gte: from
-                }
+                price: {
+                  $gte: from,
+                },
               },
               {
-                price:{
-                  $lte: to
-                }
-              }
-            ]
+                price: {
+                  $lte: to,
+                },
+              },
+            ],
           },
-          raw: true
+          raw: true,
         });
         return resolve(books);
       } catch (error) {
         return reject(error);
       }
-    })
+    });
   },
   searchBookByLimit: (query, startingLimit, resultPerPage, from, to) => {
     return new Promise(async (resolve, reject) => {
@@ -76,33 +74,31 @@ const bookService = {
             $and: [
               {
                 title: {
-                  $substring: `${query.name}`
-                }
+                  $substring: `${query.name}`,
+                },
               },
               {
-                categoryId: (query.cat == 0) ?
-                  { $ne: null } :
-                  { $eq: query.cat }
+                categoryId: query.cat == 0 ? { $ne: null } : { $eq: query.cat },
               },
               {
-                price:{
-                  $gte: from
-                }
+                price: {
+                  $gte: from,
+                },
               },
               {
-                price:{
-                  $lte: to
-                }
-              }
-            ]
+                price: {
+                  $lte: to,
+                },
+              },
+            ],
           },
-          raw: true
+          raw: true,
         });
         return resolve(books);
       } catch (error) {
         return reject(error);
       }
-    })
+    });
   },
 
   getBooksByCategoryId: (categoryId) => {
@@ -111,10 +107,10 @@ const bookService = {
         const books = await Book.findAll({
           where: {
             categoryId: {
-              $eq: categoryId
-            }
+              $eq: categoryId,
+            },
           },
-          raw: true
+          raw: true,
         });
         return resolve(books);
       } catch (error) {
@@ -126,13 +122,16 @@ const bookService = {
   getBooksLimit(startingLimit, resultPerPage) {
     return new Promise(async (resolve, reject) => {
       try {
-        const books = Book.findAll({ offset: startingLimit, limit: resultPerPage, raw: true });
+        const books = Book.findAll({
+          offset: startingLimit,
+          limit: resultPerPage,
+          raw: true,
+        });
         return resolve(books);
-      }
-      catch (error) {
+      } catch (error) {
         return reject(error);
       }
-    })
+    });
   },
 
   searchBookAndSortedByLimit(query, startingLimit, resultPerPage, from, to) {
@@ -140,103 +139,95 @@ const bookService = {
       try {
         if (query.sort == 'asc') {
           const books = await Book.findAll({
-            offset: startingLimit, limit: resultPerPage,
+            offset: startingLimit,
+            limit: resultPerPage,
             where: {
               $and: [
                 {
                   title: {
-                    $substring: `${query.name}`
-                  }
+                    $substring: `${query.name}`,
+                  },
                 },
                 {
-                  categoryId: (query.cat == 0) ?
-                    { $ne: null } :
-                    { $eq: query.cat }
+                  categoryId:
+                    query.cat == 0 ? { $ne: null } : { $eq: query.cat },
                 },
                 {
-                  price:{
-                    $gte: from
-                  }
+                  price: {
+                    $gte: from,
+                  },
                 },
                 {
-                  price:{
-                    $lte: to
-                  }
-                }
-              ]
+                  price: {
+                    $lte: to,
+                  },
+                },
+              ],
             },
-            order: [
-              ['title', 'ASC'],
-            ],
-            raw: true
+            order: [['title', 'ASC']],
+            raw: true,
           });
           return resolve(books);
-        }
-        else if (query.sort == 'desc') {
+        } else if (query.sort == 'desc') {
           const books = await Book.findAll({
-            offset: startingLimit, limit: resultPerPage,
+            offset: startingLimit,
+            limit: resultPerPage,
             where: {
               $and: [
                 {
                   title: {
-                    $substring: query.name
-                  }
+                    $substring: query.name,
+                  },
                 },
                 {
-                  categoryId: (query.cat == 0) ?
-                    { $ne: null } :
-                    { $eq: query.cat }
+                  categoryId:
+                    query.cat == 0 ? { $ne: null } : { $eq: query.cat },
                 },
                 {
-                  price:{
-                    $gte: from
-                  }
+                  price: {
+                    $gte: from,
+                  },
                 },
                 {
-                  price:{
-                    $lte: to
-                  }
-                }
-              ]
+                  price: {
+                    $lte: to,
+                  },
+                },
+              ],
             },
-            order: [
-              ['title', 'DESC'],
-            ],
-            raw: true
+            order: [['title', 'DESC']],
+            raw: true,
           });
           return resolve(books);
-        }
-        else {
+        } else {
           const books = await Book.findAll({
-            offset: startingLimit, limit: resultPerPage,
+            offset: startingLimit,
+            limit: resultPerPage,
             where: {
               $and: [
                 {
                   title: {
-                    $substring: query.name
-                  }
+                    $substring: query.name,
+                  },
                 },
                 {
-                  categoryId: (query.cat == 0) ?
-                    { $ne: null } :
-                    { $eq: query.cat }
+                  categoryId:
+                    query.cat == 0 ? { $ne: null } : { $eq: query.cat },
                 },
                 {
-                  price:{
-                    $gte: from
-                  }
+                  price: {
+                    $gte: from,
+                  },
                 },
                 {
-                  price:{
-                    $lte: to
-                  }
-                }
-              ]
+                  price: {
+                    $lte: to,
+                  },
+                },
+              ],
             },
-            order: [
-              ['price', 'ASC'],
-            ],
-            raw: true
+            order: [['price', 'ASC']],
+            raw: true,
           });
           return resolve(books);
         }
@@ -254,96 +245,85 @@ const bookService = {
               $and: [
                 {
                   title: {
-                    $substring: `${query.name}`
-                  }
+                    $substring: `${query.name}`,
+                  },
                 },
                 {
-                  categoryId: (query.cat == 0) ?
-                    { $ne: null } :
-                    { $eq: query.cat }
+                  categoryId:
+                    query.cat == 0 ? { $ne: null } : { $eq: query.cat },
                 },
                 {
-                  price:{
-                    $gte: from
-                  }
+                  price: {
+                    $gte: from,
+                  },
                 },
                 {
-                  price:{
-                    $lte: to
-                  }
-                }
-              ]
+                  price: {
+                    $lte: to,
+                  },
+                },
+              ],
             },
-            order: [
-              ['title', 'ASC'],
-            ],
-            raw: true
+            order: [['title', 'ASC']],
+            raw: true,
           });
           return resolve(books);
-        }
-        else if (query.sort == 'desc') {
+        } else if (query.sort == 'desc') {
           const books = Book.findAll({
             where: {
               $and: [
                 {
                   title: {
-                    $substring: query.name
-                  }
+                    $substring: query.name,
+                  },
                 },
                 {
-                  categoryId: (query.cat == 0) ?
-                    { $ne: null } :
-                    { $eq: query.cat }
+                  categoryId:
+                    query.cat == 0 ? { $ne: null } : { $eq: query.cat },
                 },
                 {
-                  price:{
-                    $gte: from
-                  }
+                  price: {
+                    $gte: from,
+                  },
                 },
                 {
-                  price:{
-                    $lte: to
-                  }
-                }
-              ]
+                  price: {
+                    $lte: to,
+                  },
+                },
+              ],
             },
-            order: [
-              ['title', 'DESC'],
-            ],
-            raw: true
+            order: [['title', 'DESC']],
+            raw: true,
           });
           return resolve(books);
-        }
-        else {
+        } else {
           const books = Book.findAll({
             where: {
               $and: [
                 {
                   title: {
-                    $substring: query.name
-                  }
+                    $substring: query.name,
+                  },
                 },
                 {
-                  categoryId: (query.cat == 0) ?
-                    { $ne: null } :
-                    { $eq: query.cat }
+                  categoryId:
+                    query.cat == 0 ? { $ne: null } : { $eq: query.cat },
                 },
                 {
-                  price:{
-                    $gte: from
-                  }
+                  price: {
+                    $gte: from,
+                  },
                 },
                 {
-                  price:{
-                    $lte: to
-                  }
-                }
-              ]
+                  price: {
+                    $lte: to,
+                  },
+                },
+              ],
             },
-            order: [
-              ['price', 'ASC'],
-            ],
-            raw: true
+            order: [['price', 'ASC']],
+            raw: true,
           });
           return resolve(books);
         }
@@ -356,45 +336,43 @@ const bookService = {
     return new Promise(async (resolve, reject) => {
       try {
         const latestBooks = Book.findAll({
-          order: [
-            ['createdAt', 'DESC']
-          ],
+          order: [['createdAt', 'DESC']],
           limit: 4,
-          raw: true
+          raw: true,
         });
         return resolve(latestBooks);
       } catch (error) {
         return reject(error);
       }
-    })
+    });
   },
   updateBookById: (bookId, data) => {
     return new Promise(async (resolve, reject) => {
       try {
         const result = await Book.update(data, {
           where: {
-            id: bookId
-          }
+            id: bookId,
+          },
         });
         return resolve(result);
       } catch (error) {
         return reject(error);
       }
-    })
+    });
   },
   deleteBookById: (bookId) => {
     return new Promise(async (resolve, reject) => {
       try {
         const result = await Book.destroy({
           where: {
-          id: bookId
-        }
+            id: bookId,
+          },
         });
         return resolve(result);
       } catch (error) {
         return reject(error);
       }
-    })
+    });
   },
   createBook: (data) => {
     return new Promise(async (resolve, reject) => {
@@ -405,50 +383,50 @@ const bookService = {
       } catch (error) {
         return reject(error);
       }
-    })
+    });
   },
-  deleteBookByAuthor: (idAuthor) =>{
+  deleteBookByAuthor: (idAuthor) => {
     return new Promise(async (resolve, reject) => {
       try {
         const result = await Book.destroy({
           where: {
-            authorId: idAuthor
-          }
+            authorId: idAuthor,
+          },
         });
         return resolve(result);
       } catch (error) {
         return reject(error);
       }
-    })
+    });
   },
-  deleteBookByPublisher:(idPub) =>{
+  deleteBookByPublisher: (idPub) => {
     return new Promise(async (resolve, reject) => {
       try {
         const result = await Book.destroy({
           where: {
-            publisherId: idPub
-          }
+            publisherId: idPub,
+          },
         });
         return resolve(result);
       } catch (error) {
         return reject(error);
       }
-    })
+    });
   },
-  deleteBookByCategory: (idCat) =>{
+  deleteBookByCategory: (idCat) => {
     return new Promise(async (resolve, reject) => {
       try {
         const result = await Book.destroy({
           where: {
-            categoryId: idCat
-          }
+            categoryId: idCat,
+          },
         });
         return resolve(result);
       } catch (error) {
         return reject(error);
       }
-    })
-  }
-}
+    });
+  },
+};
 
 module.exports = bookService;

@@ -1,27 +1,23 @@
 const { DataTypes } = require('sequelize');
 const db = require('../config/database');
 
-const OrderStatus = db.define('OrderStatus', 
-    {
-        statusId:{
-            field: 'id',
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            allowNull: false
-        },
-        name:{
-            type: DataTypes.STRING
-        }
+const OrderStatus = db.define(
+  'OrderStatus',
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
-    {
-        tableName: 'order_status',
-        timestamps: false
-    }
-
+    name: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+    },
+  },
+  {
+    tableName: 'order_status',
+    timestamps: true,
+  }
 );
-
-OrderStatus.sync()
-    .then(() => console.log('Order Status sync successfully'))
-    .catch(error => console.log(error));
 
 module.exports = OrderStatus;

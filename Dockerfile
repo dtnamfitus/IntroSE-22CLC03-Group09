@@ -4,8 +4,6 @@ WORKDIR /app
 
 COPY package.json /app
 
-RUN npm i -g yarn
-
 RUN yarn
 
 COPY . /app

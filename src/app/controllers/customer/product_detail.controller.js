@@ -1,21 +1,21 @@
-const express = require("express");
+const express = require('express');
 
 const router = express.Router();
-const bookService = require("../../../services/book.service");
-const categoryService = require("../../../services/category.service");
-const authorService = require("../../../services/author.service");
-const publisherService = require("../../../services/publisher.service");
-const Language = require("../../../models/enums/language.enum");
-const cartService = require("../../../services/cart.service");
-const helperService = require("../../../services/helper.service");
-const userService = require("../../../services/user.service");
-const reviewService = require("../../../services/review.service");
-const _ = require("lodash");
+const bookService = require('../../../services/book.service');
+const categoryService = require('../../../services/category.service');
+const authorService = require('../../../services/author.service');
+const publisherService = require('../../../services/publisher.service');
+const Language = require('../../../models/enums/language.enum');
+const cartService = require('../../../services/cart.service');
+const helperService = require('../../../services/helper.service');
+const userService = require('../../../services/user.service');
+const reviewService = require('../../../services/review.service');
+const _ = require('lodash');
 const moment = require('moment');
-const orderService = require("../../../services/order.service");
+const orderService = require('../../../services/order.service');
 
-router.get("/:id", async (req, res, next) => {
-  const userId = req.cookies["user"]?.id;
+router.get('/:id', async (req, res, next) => {
+  const userId = req.cookies['user']?.id;
   const cartQuantity = userId ? await cartService.getCartQuantity(userId) : 0;
   const orders = userId ? await orderService.getOrdersByUserId(userId) : [];
   try {
@@ -34,7 +34,7 @@ router.get("/:id", async (req, res, next) => {
         const user = userDetails.find((user) => user.id === review.userId);
         const star = review.rating;
         const starLeft = 5 - star;
-        const createdAt = moment(review.createdAt).format('MMM DD YYYY')
+        const createdAt = moment(review.createdAt).format('MMM DD YYYY');
         return { ...review, user, star, starLeft, createdAt };
       });
     }
@@ -51,22 +51,21 @@ router.get("/:id", async (req, res, next) => {
       starLeft: 5 - book.overallRating,
     });
     const categories = await categoryService.getAllCategories();
-    const relatedBooks = helperService.formatBooks(await bookService.getBooksByCategoryId(
-      book.categoryId
-    ));
-    console.log('book: ', book);
-    res.render("customer/product_details", {
+    const relatedBooks = helperService.formatBooks(
+      await bookService.getBooksByCategoryId(book.categoryId)
+    );
+
+    res.render('customer/product_details', {
       user,
       book,
       relatedBooks,
       categories,
       cartQuantity,
       reviews: detailedReviews,
-      orders
+      orders,
     });
   } catch (error) {
-    console.log(error);
-    res.render("customer/error500", { cartQuantity, orders });
+    res.render('customer/error500', { cartQuantity, orders });
   }
 });
 

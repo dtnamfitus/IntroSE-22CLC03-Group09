@@ -1,76 +1,74 @@
 const { DataTypes } = require('sequelize');
 const db = require('../config/database');
+const Author = require('./author.model');
+const Publisher = require('./publisher.model');
+const Category = require('./category.model');
 
-const Book = db.define('Book',
-    {
-        id: {
-            type: DataTypes.INTEGER,
-            autoIncrement: true,
-            primaryKey: true,
-            allowNull: false
-        },
-        title: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        authorId: {
-            field: 'author_id',
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
-        publisherId: {
-            field: 'publisher_id',
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
-        releaseYear: {
-            field: 'release_year',
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        price: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
-        description: {
-            type: DataTypes.TEXT
-        },
-        language: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        createdAt: {
-            field: 'created_at',
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW
-        },
-        updatedAt: {
-            field: 'updated_at',
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW
-        },
-        categoryId: {
-            field: 'category_id',
-            type: DataTypes.SMALLINT,
-            allowNull: false
-        },
-        overallRating: {
-            field: 'overall_rating',
-            type: DataTypes.SMALLINT
-        },
-        imageUrl: {
-            field: 'image_url',
-            type: DataTypes.STRING
-        }
+const Book = db.define(
+  'Book',
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
-    {
-        tableName: 'books',
-        timestamps: false
-    }
+    title: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    authorId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Author,
+        key: 'id',
+      },
+    },
+    publisherId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Publisher,
+        key: 'id',
+      },
+    },
+    categoryId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Category,
+        key: 'id',
+      },
+    },
+    releaseYear: {
+      type: DataTypes.SMALLINT,
+      allowNull: false,
+    },
+    price: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    language: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+    },
+    overallRating: {
+      type: DataTypes.FLOAT,
+      defaultValue: 0,
+    },
+    imageUrl: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+  },
+  {
+    tableName: 'books',
+    timestamps: true,
+  }
 );
-
-Book.sync()
-    .then(() => console.log('Book sync successfully'))
-    .catch(error => console.log(error));
 
 module.exports = Book;

@@ -1,34 +1,42 @@
 const { DataTypes } = require('sequelize');
 const db = require('../config/database');
+const Order = require('./order.model');
+const Book = require('./book.model');
 
-const OrderItemList = db.define('OrderItemList', 
-    {
-        orderId:{
-            field: 'order_id',
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            allowNull: false
-        },
-        quantity:{
-            type: DataTypes.INTEGER,
-            defaultValue: DataTypes.INTEGER(1)
-        },
-        bookId:{
-            field: 'book_id',
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            allowNull: false
-        }
+const OrderItemList = db.define(
+  'OrderItemList',
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
-    {
-        tableName: 'order_item_lists',
-        timestamps: false
-    }
-
+    orderId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Order,
+        key: 'id',
+      },
+    },
+    bookId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Book,
+        key: 'id',
+      },
+    },
+    quantity: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1,
+    },
+  },
+  {
+    tableName: 'order_item_lists',
+    timestamps: true,
+  }
 );
-
-OrderItemList.sync()
-    .then(() => console.log('Order Item List sync successfully'))
-    .catch(error => console.log(error));
 
 module.exports = OrderItemList;

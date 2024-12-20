@@ -1,8 +1,8 @@
-const express = require("express");
-const bookService = require("../../../services/book.service");
+const express = require('express');
+const bookService = require('../../../services/book.service');
 const router = express.Router();
 const reviewService = require('../../../services/review.service');
-const userService = require("../../../services/user.service");
+const userService = require('../../../services/user.service');
 
 router.post('/create', async (req, res) => {
   const userId = req.cookies['user']?.id;
@@ -16,19 +16,21 @@ router.post('/create', async (req, res) => {
       rating: Number(rating),
       bookId: Number(bookId),
       username: user ? user.name : username,
-      comment
+      comment,
     };
     const result = await reviewService.createReview(data);
 
     //update book's rating
     const allReviews = await reviewService.getReviewsByBookId(bookId);
-    const averageRating = Math.round(allReviews.reduce((sum, review) => sum + review.rating, 0) / allReviews.length);
+    const averageRating = Math.round(
+      allReviews.reduce((sum, review) => sum + review.rating, 0) /
+        allReviews.length
+    );
     await bookService.updateBookById(bookId, { overallRating: averageRating });
     return res.redirect(`/customer/product_details/${bookId}`);
   } catch (error) {
-    console.log(error);
     return res.status(500).render('customer/error500');
   }
-})
+});
 
 module.exports = router;

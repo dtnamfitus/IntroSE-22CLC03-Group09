@@ -6,16 +6,16 @@ const reviewService = {
       try {
         const reviews = Review.findAll({
           where: {
-            bookId: bookId
+            bookId: bookId,
           },
-          raw: true
+          raw: true,
         });
         return resolve(reviews);
       } catch (error) {
         console.log(error);
         return reject(error);
       }
-    })
+    });
   },
 
   createReview: (data) => {
@@ -26,7 +26,7 @@ const reviewService = {
       } catch (error) {
         return reject(error);
       }
-    })
+    });
   },
 
   deleteReviewByBookId: (bookId) => {
@@ -34,14 +34,14 @@ const reviewService = {
       try {
         const result = await Review.destroy({
           where: {
-            bookId: bookId
-          }
-        })
+            bookId: bookId,
+          },
+        });
       } catch (error) {
         return reject(error);
       }
-    })
-  }
-}
+    });
+  },
+};
 
 module.exports = reviewService;

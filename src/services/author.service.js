@@ -7,39 +7,37 @@ const authorService = {
         const authors = Author.findAll({ raw: true });
         return resolve(authors);
       } catch (error) {
-        console.log(error);
         return reject(error);
       }
-    })
+    });
   },
   getAuthorById: (id) => {
     return new Promise((resolve, reject) => {
       try {
         const author = Author.findOne({
           where: {
-            id: id
+            id: id,
           },
-          raw: true
+          raw: true,
         });
         return resolve(author);
       } catch (error) {
         return reject(error);
       }
-    })
+    });
   },
   createAuthor: (data) => {
     return new Promise(async (resolve, reject) => {
       try {
         await Author.sync();
         const result = await Author.create({
-
-          name: data
+          name: data,
         });
         return resolve(result);
       } catch (error) {
         return reject(error);
       }
-    })
+    });
   },
   updateAuthor: (newName, idAu) => {
     return new Promise(async (resolve, reject) => {
@@ -50,26 +48,26 @@ const authorService = {
           },
           {
             where: { id: idAu },
-          });
+          }
+        );
         return resolve(author);
       } catch (error) {
         return reject(error);
-      } 
-    })
+      }
+    });
   },
-  deleteAuthor: (authorId) =>{
+  deleteAuthor: (authorId) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const author = Author.destroy(
-          {
-            where: { id: authorId },
-          });
+        const author = Author.destroy({
+          where: { id: authorId },
+        });
         return resolve(author);
       } catch (error) {
         return reject(error);
-      } 
-    })
-  }
-}
+      }
+    });
+  },
+};
 
 module.exports = authorService;

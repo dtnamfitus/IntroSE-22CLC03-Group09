@@ -16,11 +16,11 @@ const fileService = {
           return resolve(file.toJSON());
         }
         // else {
-          
+
         // }
-      })
-    })
-  }
+      });
+    });
+  },
 };
 
 module.exports = fileService;

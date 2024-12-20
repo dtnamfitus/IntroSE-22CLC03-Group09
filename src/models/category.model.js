@@ -1,31 +1,27 @@
 const { DataTypes } = require('sequelize');
 const db = require('../config/database');
 
-const Category = db.define('Category',
-    {
-        id: {
-            type: DataTypes.SMALLINT,
-            primaryKey: true,
-            allowNull: false,
-            autoIncrement: true
-        },
-        name: {
-            type: DataTypes.STRING,
-        },
-        imgUrl: {
-            field: 'img_url',
-            type: DataTypes.STRING,
-            allowNull: false
-        }
+const Category = db.define(
+  'Category',
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
-    {
-        tableName: 'categories',
-        timestamps: false
-    }
-)
-
-Category.sync()
-    .then(() => console.log('Category sync successfully'))
-    .catch(error => console.log(error));
+    name: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+    },
+    imgUrl: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+  },
+  {
+    tableName: 'categories',
+    timestamps: true,
+  }
+);
 
 module.exports = Category;

@@ -17,5 +17,5 @@ module.exports = {
   $notIn: Op.notIn,
   $substring: Op.substring,
   $iLike: Op.iLike,
-  $like: Op.like
-}
+  $like: Op.like,
+};

@@ -1,48 +1,49 @@
 const { DataTypes } = require('sequelize');
 const db = require('../config/database');
+const User = require('./user.model');
+const Book = require('./book.model');
 
-const Review = db.define('Review',
+const Review = db.define(
+  'Review',
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      allowNull: false,
-      autoIncrement: true
+      autoIncrement: true,
     },
     userId: {
-      field: 'user_id',
-      type: DataTypes.STRING
-    },
-    username: {
-      type: DataTypes.STRING
-    },
-    rating: {
-      type: DataTypes.INTEGER
-    },
-    comment: {
-      type: DataTypes.TEXT
+      type: DataTypes.STRING,
+      allowNull: false,
+      references: {
+        model: User,
+        key: 'id',
+      },
     },
     bookId: {
-      field: 'book_id',
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Book,
+        key: 'id',
+      },
     },
-    createdAt: {
-      field: 'created_at',
-      type: DataTypes.DATE
+    rating: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        min: 1,
+        max: 5,
+      },
     },
-    updatedAt: {
-      field: 'updated_at',
-      type: DataTypes.DATE
-    }
+    comment: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
   },
   {
     tableName: 'reviews',
-    timestamps: false
+    timestamps: true,
   }
-)
-
-Review.sync()
-  .then(() => console.log('Review sync successfully'))
-  .catch(error => console.log(error));
+);
 
 module.exports = Review;
