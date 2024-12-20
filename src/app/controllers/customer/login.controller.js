@@ -1,10 +1,8 @@
-const express = require('express');
-const router = express.Router();
 const userService = require('../../../services/user.service');
 const categoryService = require('../../../services/category.service');
 const _ = require('lodash');
 
-router.get('/', async (req, res) => {
+const getLoginPage = async (req, res) => {
   try {
     const categories = await categoryService.getAllCategories();
     if (req.cookies.user == null) res.render('customer/login', { categories });
@@ -12,9 +10,9 @@ router.get('/', async (req, res) => {
   } catch (error) {
     res.status(500).send(error);
   }
-});
+};
 
-router.post('/find', async (req, res) => {
+const verifyAccount = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await userService.findUser(email, password);
@@ -29,6 +27,9 @@ router.post('/find', async (req, res) => {
     const categories = await categoryService.getAllCategories();
     res.render('customer/login', { categories, message: error });
   }
-});
+};
 
-module.exports = router;
+module.exports = {
+  getLoginPage,
+  verifyAccount,
+};

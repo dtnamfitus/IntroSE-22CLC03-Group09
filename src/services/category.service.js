@@ -1,79 +1,60 @@
 const Category = require('../models/category.model');
 
 const categoryService = {
-  getAllCategories: () => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const categories = Category.findAll({ raw: true });
-        return resolve(categories);
-      } catch (error) {
-        return reject(error);
-      }
-    });
+  getAllCategories: async () => {
+    try {
+      return await Category.findAll({ raw: true });
+    } catch (error) {
+      throw error;
+    }
   },
-  createCategory: (newName, newImgUrl) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const categories = Category.create({
-          name: newName,
-          imgUrl: newImgUrl,
-        });
-        return resolve(categories);
-      } catch (error) {
-        return reject(error);
-      }
-    });
+
+  createCategory: async (newName, newImgUrl) => {
+    try {
+      return await Category.create({
+        name: newName,
+        img_url: newImgUrl,
+      });
+    } catch (error) {
+      throw error;
+    }
   },
-  getCategoryById: (idCat) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const categories = Category.findOne({
-          where: {
-            id: idCat,
-          },
-          raw: true,
-        });
-        return resolve(categories);
-      } catch (error) {
-        return reject(error);
-      }
-    });
+
+  getCategoryById: async (idCat) => {
+    try {
+      return await Category.findOne({
+        where: {
+          id: idCat,
+        },
+        raw: true,
+      });
+    } catch (error) {
+      throw error;
+    }
   },
-  updateCategoryById: (idCat, newName) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const categories = Category.update(
-          { name: newName },
-          { where: { id: idCat } }
-        );
-        return resolve(categories);
-      } catch (error) {
-        return reject(error);
-      }
-    });
+
+  updateCategoryById: async (idCat, newName) => {
+    try {
+      return await Category.update({ name: newName }, { where: { id: idCat } });
+    } catch (error) {
+      throw error;
+    }
   },
-  updateCatImgById: (idCat, url) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const categories = Category.update(
-          { imgUrl: url },
-          { where: { id: idCat } }
-        );
-        return resolve(categories);
-      } catch (error) {
-        return reject(error);
-      }
-    });
+
+  updateCatImgById: async (idCat, url) => {
+    try {
+      return await Category.update({ img_url: url }, { where: { id: idCat } });
+    } catch (error) {
+      throw error;
+    }
   },
-  deleteCategory: (idCat) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const categories = Category.destroy({ where: { id: idCat } });
-        return resolve(categories);
-      } catch (error) {
-        return reject(error);
-      }
-    });
+
+  deleteCategory: async (idCat) => {
+    try {
+      return await Category.destroy({ where: { id: idCat } });
+    } catch (error) {
+      throw error;
+    }
   },
 };
 

@@ -12,7 +12,7 @@ const Review = db.define(
       autoIncrement: true,
     },
     userId: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -45,5 +45,9 @@ const Review = db.define(
     timestamps: true,
   }
 );
+
+Review.sync()
+  .then(() => console.log('Review sync successfully'))
+  .catch((error) => console.log(error));
 
 module.exports = Review;

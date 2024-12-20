@@ -12,7 +12,7 @@ const orderService = require('../../../services/order.service');
 const router = express.Router();
 
 // Get user by Id
-router.get('/profile', async (req, res) => {
+const getProfile = async (req, res) => {
   const userId = req.cookies['user'].id;
   const cartQuantity = userId ? await cartService.getCartQuantity(userId) : 0;
   const orders = userId ? await orderService.getOrdersByUserId(userId) : [];
@@ -36,9 +36,9 @@ router.get('/profile', async (req, res) => {
   } catch (error) {
     return res.status(500).send(error);
   }
-});
+};
 
-router.post('/edit', async (req, res) => {
+const editProfile = async (req, res) => {
   try {
     const body = req.body;
     const { id, oldPassword, ...data } = body;
@@ -47,17 +47,17 @@ router.post('/edit', async (req, res) => {
   } catch (error) {
     return res.redirect('/customer/user/profile?success=false');
   }
-});
+};
 
-router.get('/:id/checkout', async (req, res) => {
+const checkOut = async (req, res) => {
   try {
     return res.render('customer/checkout');
   } catch (error) {
     return res.status(500).send(error);
   }
-});
+};
 
-router.post('/updateAvatar', async (req, res) => {
+const updateAvatar = async (req, res) => {
   try {
     const uploadDir = path.join(
       appRoot.toString(),
@@ -85,9 +85,9 @@ router.post('/updateAvatar', async (req, res) => {
   } catch (error) {
     return res.redirect('/customer/user/profile?success=false');
   }
-});
+};
 
-router.get('/password', async (req, res) => {
+const getPasswordPage = async (req, res) => {
   const userId = req.cookies['user'].id;
   const cartQuantity = userId ? await cartService.getCartQuantity(userId) : 0;
   const orders = userId ? await orderService.getOrdersByUserId(userId) : [];
@@ -115,9 +115,9 @@ router.get('/password', async (req, res) => {
       orders,
     });
   }
-});
+};
 
-router.post('/password/change', async (req, res) => {
+const changePassword = async (req, res) => {
   try {
     const { oldPass, newPass } = req.body;
     const userId = req.cookies['user'].id;
@@ -137,6 +137,13 @@ router.post('/password/change', async (req, res) => {
   } catch (error) {
     return res.redirect('/customer/user/password?success=false');
   }
-});
+};
 
-module.exports = router;
+module.exports = {
+  updateAvatar,
+  getProfile,
+  editProfile,
+  checkOut,
+  getPasswordPage,
+  changePassword,
+};

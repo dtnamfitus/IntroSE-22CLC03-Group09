@@ -1,16 +1,13 @@
-const express = require('express');
 const bookService = require('../../../services/book.service');
-const router = express.Router();
 const reviewService = require('../../../services/review.service');
 const userService = require('../../../services/user.service');
 
-router.post('/create', async (req, res) => {
+const createReview = async (req, res) => {
   const userId = req.cookies['user']?.id;
   const { rating, bookId, comment, username } = req.body;
   try {
     const user = userId ? await userService.getUserById(userId) : null;
 
-    //create review
     const data = {
       userId,
       rating: Number(rating),
@@ -31,6 +28,8 @@ router.post('/create', async (req, res) => {
   } catch (error) {
     return res.status(500).render('customer/error500');
   }
-});
+};
 
-module.exports = router;
+module.exports = {
+  createReview,
+};

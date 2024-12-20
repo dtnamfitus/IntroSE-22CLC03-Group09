@@ -20,4 +20,8 @@ const Publisher = db.define(
   }
 );
 
+Publisher.sync()
+  .then(() => console.log('Publisher sync successfully'))
+  .catch((error) => console.log(error));
+
 module.exports = Publisher;

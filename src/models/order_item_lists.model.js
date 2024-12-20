@@ -39,4 +39,8 @@ const OrderItemList = db.define(
   }
 );
 
+OrderItemList.sync()
+  .then(() => console.log('OrderItemList sync successfully'))
+  .catch((error) => console.log(error));
+
 module.exports = OrderItemList;

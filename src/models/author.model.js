@@ -20,4 +20,8 @@ const Author = db.define(
   }
 );
 
+Author.sync()
+  .then(() => console.log('Author sync successfully'))
+  .catch((error) => console.log(error));
+
 module.exports = Author;

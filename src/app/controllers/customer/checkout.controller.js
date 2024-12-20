@@ -1,12 +1,10 @@
-const express = require('express');
-const router = express.Router();
 const cartService = require('../../../services/cart.service');
 const bookService = require('../../../services/book.service');
 const orderService = require('../../../services/order.service');
 const orderItemListService = require('../../../services/order_item_lists.service');
 const helperService = require('../../../services/helper.service');
 
-router.post('/', async (req, res) => {
+const checkOut = async (req, res) => {
   try {
     let user = req.cookies['user'];
     if (user == undefined)
@@ -46,9 +44,9 @@ router.post('/', async (req, res) => {
   } catch (error) {
     res.render('customer/error401');
   }
-});
+};
 
-router.post('/create_order', async (req, res) => {
+const createOrder = async (req, res) => {
   try {
     let user = req.cookies['user'];
     const yourCart = await cartService.getCart(user.id);
@@ -72,6 +70,9 @@ router.post('/create_order', async (req, res) => {
   } catch (error) {
     res.render('customer/error401');
   }
-});
+};
 
-module.exports = router;
+module.exports = {
+  checkOut,
+  createOrder,
+};

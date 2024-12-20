@@ -6,7 +6,7 @@ const _ = require('lodash');
 const helperService = require('../../../services/helper.service');
 const orderService = require('../../../services/order.service');
 
-router.get('/', async (req, res, next) => {
+const getCart = async (req, res, next) => {
   try {
     let user = req.cookies['user'];
     const orders = user ? await orderService.getOrdersByUserId(user.id) : [];
@@ -52,9 +52,9 @@ router.get('/', async (req, res, next) => {
   } catch (error) {
     res.render('/customer/error500');
   }
-});
+};
 
-router.post('/add-to-cart', async (req, res) => {
+const addToCart = async (req, res) => {
   try {
     let message = '';
     let user = req.cookies['user'];
@@ -91,9 +91,9 @@ router.post('/add-to-cart', async (req, res) => {
   } catch (error) {
     res.status(500).send(error);
   }
-});
+};
 
-router.post('/remove-from-cart', async (req, res) => {
+const removeFromCart = async (req, res) => {
   try {
     let user = req.cookies['user'];
     const book_id = req.body.id;
@@ -114,9 +114,9 @@ router.post('/remove-from-cart', async (req, res) => {
   } catch (error) {
     res.status(500).send(error);
   }
-});
+};
 
-router.post('/increase-quantity', async (req, res) => {
+const increaseQuantity = async (req, res) => {
   try {
     let user = req.cookies['user'];
 
@@ -131,16 +131,13 @@ router.post('/increase-quantity', async (req, res) => {
       }
       newProductsJson.push(obj);
     }
-    const updatedCart = await cartService.updateCart(
-      user.id,
-      JSON.stringify(newProductsJson)
-    );
+    await cartService.updateCart(user.id, JSON.stringify(newProductsJson));
     message = 'Successful';
     res.json({ msg: message });
   } catch (error) {}
-});
+};
 
-router.post('/decrease-quantity', async (req, res) => {
+const decreaseQuantity = async (req, res) => {
   try {
     let user = req.cookies['user'];
     const book_id = req.body.id;
@@ -156,13 +153,16 @@ router.post('/decrease-quantity', async (req, res) => {
       }
       newProductsJson.push(obj);
     }
-    const updatedCart = await cartService.updateCart(
-      user.id,
-      JSON.stringify(newProductsJson)
-    );
-    message = 'Successful';
+    await cartService.updateCart(user.id, JSON.stringify(newProductsJson));
+    const message = 'Successful';
     res.json({ msg: message });
   } catch (error) {}
-});
+};
 
-module.exports = router;
+module.exports = {
+  getCart,
+  addToCart,
+  removeFromCart,
+  increaseQuantity,
+  decreaseQuantity,
+};

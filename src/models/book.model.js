@@ -71,4 +71,8 @@ const Book = db.define(
   }
 );
 
+Book.sync()
+  .then(() => console.log('Book sync successfully'))
+  .catch((error) => console.log(error));
+
 module.exports = Book;

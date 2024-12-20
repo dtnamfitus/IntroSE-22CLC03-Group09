@@ -3,7 +3,7 @@ const express = require('express');
 const morgan = require('morgan');
 const hbs = require('express-handlebars');
 const path = require('path');
-const route = require('./routes');
+const router = require('./routes');
 const db = require('./config/database');
 const cookieParser = require('cookie-parser');
 
@@ -46,7 +46,7 @@ app.engine(
 );
 
 // Routes
-route(app);
+router.route(app);
 
 // Connect to the database and then start the server
 db.authenticate()

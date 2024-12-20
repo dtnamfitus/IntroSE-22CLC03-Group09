@@ -12,7 +12,7 @@ const Cart = db.define(
       autoIncrement: true,
     },
     userId: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -38,5 +38,9 @@ const Cart = db.define(
     timestamps: true,
   }
 );
+
+Cart.sync()
+  .then(() => console.log('Cart sync successfully'))
+  .catch((error) => console.log(error));
 
 module.exports = Cart;

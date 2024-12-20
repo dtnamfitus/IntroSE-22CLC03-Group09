@@ -12,7 +12,7 @@ const Order = db.define(
       autoIncrement: true,
     },
     userId: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -55,5 +55,9 @@ const Order = db.define(
     timestamps: true,
   }
 );
+
+Order.sync()
+  .then(() => console.log('Order sync successfully'))
+  .catch((error) => console.log(error));
 
 module.exports = Order;

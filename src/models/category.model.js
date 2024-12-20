@@ -13,7 +13,7 @@ const Category = db.define(
       type: DataTypes.STRING(100),
       allowNull: false,
     },
-    imgUrl: {
+    img_url: {
       type: DataTypes.STRING(255),
       allowNull: true,
     },
@@ -23,5 +23,9 @@ const Category = db.define(
     timestamps: true,
   }
 );
+
+Category.sync()
+  .then(() => console.log('Category sync successfully'))
+  .catch((error) => console.log(error));
 
 module.exports = Category;

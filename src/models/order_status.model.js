@@ -20,4 +20,8 @@ const OrderStatus = db.define(
   }
 );
 
+OrderStatus.sync()
+  .then(() => console.log('OrderStatus sync successfully'))
+  .catch((error) => console.log(error));
+
 module.exports = OrderStatus;

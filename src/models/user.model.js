@@ -45,4 +45,8 @@ const User = db.define(
   }
 );
 
+User.sync()
+  .then(() => console.log('User sync successfully'))
+  .catch((error) => console.log(error));
+
 module.exports = User;
