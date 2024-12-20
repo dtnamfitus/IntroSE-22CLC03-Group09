@@ -1,7 +1,7 @@
 const Category = require('../models/category.model');
 
 const categoryService = {
-  getAllCategories: async () => {
+  async getAllCategories() {
     try {
       return await Category.findAll({ raw: true });
     } catch (error) {

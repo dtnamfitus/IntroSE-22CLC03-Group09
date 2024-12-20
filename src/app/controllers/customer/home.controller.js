@@ -41,7 +41,7 @@ const getHomePage = async (req, res) => {
       userId ? userService.getUserById(userId) : null,
       userId ? orderService.getOrdersByUserId(userId) : [],
     ]);
-
+    
     const paginationInfo = await getPaginationInfo(
       totalBooks.length,
       currentPage,

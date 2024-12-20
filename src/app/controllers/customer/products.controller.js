@@ -4,6 +4,13 @@ const categoryService = require('../../../services/category.service');
 const cartService = require('../../../services/cart.service');
 const helperService = require('../../../services/helper.service');
 const orderService = require('../../../services/order.service');
+const authorService = require('../../../services/author.service'); // Added if needed
+const publisherService = require('../../../services/publisher.service'); // Added if needed
+const userService = require('../../../services/user.service'); // Added if needed
+const reviewService = require('../../../services/review.service'); // Added if needed
+const moment = require('moment');
+const _ = require('lodash');
+
 const ITEMS_PER_PAGE = 6;
 
 const getPaginationInfo = (totalItems, currentPage, limit, length = 6) => {
@@ -17,54 +24,51 @@ const parseQueryParams = (query) => {
   const to = query.to ? Number(query.to[1]) : 1000000000;
 
   return {
+    name: query.name || null,
     pageNo: !isNaN(pageAsNum) && pageAsNum > 0 ? pageAsNum : 1,
     from,
     to,
     sortFilter: query.sort || '',
+    cat: query.cat || null,
   };
 };
 
 const getProducts = async (req, res) => {
-  const user = req.cookies['user'];
-  const { pageNo, from, to, sortFilter } = parseQueryParams(req.query);
+  let user = req.cookies['user'];
+  const cartQuantity = user ? await cartService.getCartQuantity(user.id) : 0;
+  const orders = user ? await orderService.getOrdersByUserId(user.id) : [];
+  const limit = ITEMS_PER_PAGE;
 
   try {
-    const [cartQuantity, orders, categories] = await Promise.all([
-      user ? cartService.getCartQuantity(user.id) : 0,
-      user ? orderService.getOrdersByUserId(user.id) : [],
-      categoryService.getAllCategories(),
-    ]);
+    // Sử dụng parseQueryParams để xử lý req.query
+    const { name = null, cat = null, sort = {}, pageNo, from, to } = parseQueryParams(req.query);
+    const offset = (pageNo - 1) * limit;
 
-    const searchFunction =
-      sortFilter === ''
-        ? bookService.searchBook
-        : bookService.searchBookAndSorted;
+    let products, countBooks, pagination_info;
 
-    const searchByLimitFunction =
-      sortFilter === ''
-        ? bookService.searchBookByLimit
-        : bookService.searchBookAndSortedByLimit;
+    // Tính tổng số sách
+    countBooks = await bookService.countBooks({ name, cat }, from, to);
 
-    const totalBooks = await searchFunction(req.query, from, to);
-    const countBooks = totalBooks.length;
-
-    const paginationInfo =
-      countBooks > 0
-        ? getPaginationInfo(countBooks, pageNo, ITEMS_PER_PAGE)
-        : null;
-
-    const products = await searchByLimitFunction(
-      req.query,
-      ITEMS_PER_PAGE * (pageNo - 1),
-      ITEMS_PER_PAGE,
+    // Lấy danh sách sách theo trang
+    products = await bookService.searchBookByLimit(
+      { name, cat, sort },
+      offset,
+      limit,
       from,
       to
     );
 
+    // Tạo thông tin phân trang
+    pagination_info = getPaginationInfo(countBooks, pageNo, limit);
+    if (pagination_info.total_pages < 2) pagination_info = null;
+
+    const categories = await categoryService.getAllCategories();
+    products = helperService.formatBooks(products);
+    console.log(products)
     res.render('customer/products', {
       user,
-      pagination_info: paginationInfo,
-      products: helperService.formatBooks(products),
+      pagination_info,
+      products,
       categories,
       cartQuantity,
       orders,
@@ -74,6 +78,8 @@ const getProducts = async (req, res) => {
     res.render('customer/error500');
   }
 };
+
+
 
 const searchProduct = async (req, res) => {
   try {
@@ -86,9 +92,7 @@ const searchProduct = async (req, res) => {
     });
   } catch (error) {
     console.error('Error searching products:', error);
-    res
-      .status(500)
-      .json({ error: 'An error occurred while searching products' });
+    res.status(500).json({ error: 'An error occurred while searching products' });
   }
 };
 
@@ -113,13 +117,12 @@ const getProductDetail = async (req, res) => {
         publisherService.getPublisherById(book.publisherId),
         userId ? userService.getUserById(userId) : null,
         categoryService.getAllCategories(),
-        bookService.getBooksByCategoryId(book.categoryId),
+        bookService.getRelatedBooks(book.categoryId),
       ]);
 
     Object.assign(book, {
       author: author?.name || 'Unknown',
       publisher: publisher?.name || 'Unknown',
-      language: Language[book.language],
       star: book.overallRating,
       starLeft: 5 - book.overallRating,
     });
@@ -157,10 +160,6 @@ const getDetailedReviews = async (bookId) => {
     const createdAt = moment(review.createdAt).format('MMM DD YYYY');
     return { ...review, user, star, starLeft, createdAt };
   });
-};
-
-module.exports = {
-  getProductDetail,
 };
 
 module.exports = {
