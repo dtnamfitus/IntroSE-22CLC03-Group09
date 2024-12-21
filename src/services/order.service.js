@@ -6,7 +6,7 @@ const orderService = {
       try {
         const orders = Order.findAll({
           where: {
-            createdBy: userId,
+            userId: userId,
           },
           raw: true,
         });
@@ -26,7 +26,7 @@ const orderService = {
           phone: userPhone,
           totalPrice: subTotal,
           note: null,
-          createdBy: userId,
+          userId: userId,
         });
         resolve(order);
       } catch (err) {
@@ -39,7 +39,7 @@ const orderService = {
       try {
         const order = await Order.findAll({
           where: {
-            $and: [{ createdBy: iduser }, { status: 2 }],
+            $and: [{ userId: iduser }, { status: 2 }],
           },
           raw: true,
         });
@@ -54,7 +54,7 @@ const orderService = {
       try {
         const order = await Order.findAll({
           where: {
-            $and: [{ createdBy: iduser }, { status: 1 }],
+            $and: [{ userId: iduser }, { status: 1 }],
           },
           raw: true,
         });
@@ -69,7 +69,7 @@ const orderService = {
       try {
         const order = await Order.findAll({
           where: {
-            $and: [{ createdBy: iduser }, { status: 3 }],
+            $and: [{ userId: iduser }, { status: 3 }],
           },
           raw: true,
         });

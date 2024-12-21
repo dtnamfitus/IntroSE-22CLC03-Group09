@@ -1,5 +1,5 @@
 const OrderItemList = require('../models/order_item_lists.model');
-const { Sequelize } = require('sequelize');
+const { Sequelize, Op } = require('sequelize');
 
 const db = require('../config/database');
 
@@ -24,7 +24,7 @@ const orderItemListService = {
         const order = OrderItemList.findAll({
           where: {
             orderId: {
-              $eq: id,
+              [Op.eq]: id,
             },
           },
           raw: true,

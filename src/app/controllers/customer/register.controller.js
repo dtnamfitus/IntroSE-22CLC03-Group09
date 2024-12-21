@@ -20,50 +20,44 @@ const validateRegistrationData = async ({
   const errors = [];
   const phoneRegex = /^\+?1?\s*?\(?\d{3}(?:\)|[-|\s])?\s*?\d{3}[-|\s]?\d{4}$/;
 
-  if (!name || !email || !pass1 || !pass2 || !dob || !phone) {
-    errors.push({
-      message: 'Please enter all fields',
-      check: 'alert-danger show',
-    });
+  // Helper function to add errors
+  const addError = (message) =>
+    errors.push({ message, check: 'alert-danger show' });
+
+  // Validate required fields
+  if (![name, email, pass1, pass2, dob, phone].every(Boolean)) {
+    addError('Please enter all fields');
+    return errors;
   }
 
+  // Validate email uniqueness
   if (await userService.checkIfExists(email)) {
-    errors.push({
-      message: 'Email is already in use',
-      check: 'alert-danger show',
-    });
+    addError('Email is already in use');
   }
 
+  // Validate password length
   if (pass1.length < 6) {
-    errors.push({
-      message: 'Password should be at least 6 characters',
-      check: 'alert-danger show',
-    });
+    addError('Password should be at least 6 characters');
   }
 
+  // Validate email format
   if (!validateEmail(email)) {
-    errors.push({
-      message: 'Invalid email format',
-      check: 'alert-danger show',
-    });
+    addError('Invalid email format');
   }
 
+  // Validate passwords match
   if (pass1 !== pass2) {
-    errors.push({
-      message: 'Passwords do not match',
-      check: 'alert-danger show',
-    });
+    addError('Passwords do not match');
   }
 
+  // Validate phone number
   if (!phoneRegex.test(phone)) {
-    errors.push({
-      message: 'Invalid phone number',
-      check: 'alert-danger show',
-    });
+    addError('Invalid phone number');
   }
 
   return errors;
 };
+
 
 const getRegisterPage = async (req, res) => {
   try {
@@ -116,7 +110,12 @@ const register = async (req, res) => {
     });
   } catch (error) {
     console.error('Error during registration:', error);
-    res.status(500).render('customer/error500');
+    res.render('customer/register', {
+      err: [
+        { message: error },
+      ],
+      categories,
+    });
   }
 };
 

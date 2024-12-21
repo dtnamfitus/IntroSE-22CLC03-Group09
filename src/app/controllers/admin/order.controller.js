@@ -6,7 +6,7 @@ const getOrderItemList = async (req, res, next) => {
     if (req.cookies.admin != null) {
       const order = await orderService.getAllOrderAscByDate();
       for (let i = 0; i < order.length; i++) {
-        const user = await userService.findUserById(order[i].createdBy);
+        const user = await userService.findUserById(order[i].userId);
         const nameStatus = await statusService.getStatusName(order[i].status);
         order[i]['name'] = user.name;
         order[i]['statusName'] = nameStatus.name;
