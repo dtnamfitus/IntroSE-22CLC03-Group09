@@ -1,6 +1,5 @@
+const { Op } = require('sequelize');
 const Cart = require('../models/cart.model');
-const db = require('../config/database');
-const { $eq } = require('../config/operatorAlias');
 
 const cartService = {
   getCart: (id) => {
@@ -8,7 +7,7 @@ const cartService = {
       try {
         const cart = Cart.findOne({
           where: {
-            userId: { $eq: id },
+            userId: { [Op.eq]: id },
           },
           raw: true,
         });
@@ -23,7 +22,7 @@ const cartService = {
       try {
         const cart = await Cart.findOne({
           where: {
-            userId: { $eq: id },
+            userId: { [Op.eq]: id },
           },
           raw: true,
         });

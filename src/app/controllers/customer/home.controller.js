@@ -6,7 +6,7 @@ const helperService = require('../../../services/helper.service');
 const userService = require('../../../services/user.service');
 const orderService = require('../../../services/order.service');
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 4;
 
 const getPaginationInfo = async (totalItems, currentPage, limit) => {
   const paginator = new Paginator(limit, 2);
