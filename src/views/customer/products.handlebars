@@ -11,6 +11,27 @@
 </div>
 <!-- Page Header End -->
 
+<style>
+  .spinner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #f9f9f9;
+    /* Màu nền khi loading */
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .spinner i {
+    font-size: 2rem;
+    color: #007bff;
+    /* Màu của spinner */
+  }
+</style>
 
 <!-- Shop Start -->
 <div class="container-fluid pt-5">
@@ -20,18 +41,18 @@
       <!-- Price Start -->
       <div class="border-bottom mb-4 pb-4">
         <h5 class="font-weight-semi-bold mb-4">Filter by price</h5>
-        <button class="btn d-flex align-items-center text-dark" id="specialButton"
-          data-params='0,10000000'><i class="fas fa-play mr-2"></i> All</button>
-        <button class="btn d-flex align-items-center text-dark" id="specialButton1"
-          data-params='0,50000'><i class="fas fa-play mr-2"></i>0&#8363; - 50.000&#8363;</button>
-        <button class="btn d-flex align-items-center text-dark" id="specialButton2"
-          data-params='50000,100000'><i class="fas fa-play mr-2"></i>50.000&#8363; - 100000&#8363;</button>
-        <button class="btn d-flex align-items-center text-dark" id="specialButton3"
-          data-params='100000,200000'><i class="fas fa-play mr-2"></i>100.000&#8363; - 200.000&#8363;</button>
-        <button class="btn d-flex align-items-center text-dark" id="specialButton4"
-          data-params='200000,500000'><i class="fas fa-play mr-2"></i>200.000&#8363; - 500.000&#8363;</button>
-        <button class="btn d-flex align-items-center text-dark" id="specialButton5"
-          data-params='500000,10000000'><i class="fas fa-play mr-2"></i>More than 500.000&#8363;</button>
+        <button class="btn d-flex align-items-center text-dark" id="specialButton" data-params='0,10000000'><i
+            class="fas fa-play mr-2"></i> All</button>
+        <button class="btn d-flex align-items-center text-dark" id="specialButton1" data-params='0,50000'><i
+            class="fas fa-play mr-2"></i>0&#8363; - 50.000&#8363;</button>
+        <button class="btn d-flex align-items-center text-dark" id="specialButton2" data-params='50000,100000'><i
+            class="fas fa-play mr-2"></i>50.000&#8363; - 100000&#8363;</button>
+        <button class="btn d-flex align-items-center text-dark" id="specialButton3" data-params='100000,200000'><i
+            class="fas fa-play mr-2"></i>100.000&#8363; - 200.000&#8363;</button>
+        <button class="btn d-flex align-items-center text-dark" id="specialButton4" data-params='200000,500000'><i
+            class="fas fa-play mr-2"></i>200.000&#8363; - 500.000&#8363;</button>
+        <button class="btn d-flex align-items-center text-dark" id="specialButton5" data-params='500000,10000000'><i
+            class="fas fa-play mr-2"></i>More than 500.000&#8363;</button>
       </div>
       <!-- Price End -->
       <div class="border-bottom mb-4 pb-4 navbar-light text-dark">
@@ -69,7 +90,11 @@
         <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
           <div class="card product-item border-0 mb-4">
             <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-              <img class="img-fluid w-100" src="{{imageUrl}}" alt="cover">
+              <div class="spinner" id="spinner-{{id}}"
+                style="display: flex; align-items: center; justify-content: center; height: 100%;">
+                <i class="fas fa-spinner fa-spin"></i>
+              </div>
+              <img class="img-fluid w-100" src="{{imageUrl}}" alt="cover" onload="handleImageLoad({{id}})">
             </div>
             <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
               <h6 class="text-truncate mb-3">{{title}}</h6>
@@ -120,6 +145,22 @@
         {{/if}}
       </div>
     </div>
+    <script>
+      function handleImageLoad(id) {
+        // Ẩn spinner
+        const spinner = document.getElementById(`spinner-${id}`);
+        if (spinner) {
+          spinner.style.display = 'none';
+        }
+
+        // Hiển thị ảnh
+        const img = document.getElementById(`product-img-${id}`);
+        if (img) {
+          img.style.display = 'block';
+        }
+      }
+
+    </script>
     <!-- Shop Product End -->
   </div>
 </div>
