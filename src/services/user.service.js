@@ -2,6 +2,7 @@ const User = require('../models/user.model');
 const db = require('../config/database');
 const bcrypt = require('bcryptjs');
 const _ = require('lodash');
+const { Op } = require('sequelize');
 
 const userService = {
   getAllUsers: () => {
@@ -75,7 +76,7 @@ const userService = {
         const user = await User.findOne({
           where: {
             email: {
-              $eq: email,
+              [Op.eq]: email,
             },
           },
           raw: true,
@@ -102,7 +103,7 @@ const userService = {
           avatarUrl:
             'https://seud.org/wp-content/uploads/2020/06/avatar-nobody.png',
           createAt: d,
-          updateAt: null,
+          updateAt: d,
         });
         return resolve(user);
       } catch (error) {
@@ -116,7 +117,7 @@ const userService = {
         const user = await User.findOne({
           where: {
             id: {
-              $eq: id,
+              [Op.eq]: id,
             },
           },
           raw: true,
