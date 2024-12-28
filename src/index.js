@@ -7,6 +7,17 @@ const router = require('./routes');
 const db = require('./config/database');
 const cookieParser = require('cookie-parser');
 
+require('./models/order.model');
+require('./models/order_item_lists.model');
+require('./models/book.model');
+require('./models/author.model');
+require('./models/category.model');
+require('./models/cart.model');
+require('./models/publisher.model');
+require('./models/user.model');
+require('./models/review.model');
+require('./models/order_status.model');
+
 const helper = hbs.create({});
 helper.handlebars.registerHelper(
   'forloop',

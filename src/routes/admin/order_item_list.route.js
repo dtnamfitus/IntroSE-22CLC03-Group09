@@ -1,8 +1,8 @@
 const express = require('express');
 
 const router = express.Router();
-const orderItemListController = require('../app/controllers/admin/order_item_list.controller');
+const orderController = require('../../app/controllers/admin/order.controller');
 
-router.get('/list_orders', orderItemListController.getOrderItemList);
+router.get('/list_orders', orderController.getOrderItemList);
 
 module.exports = router;

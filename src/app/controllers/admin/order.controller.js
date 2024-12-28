@@ -22,11 +22,24 @@ const getOrderItemList = async (req, res, next) => {
   } catch (error) {}
 };
 
-const getOrderById = async (id_order, adminCookie) => {
-  if (!adminCookie) throw new Error('Unauthorized');
+const getOrderById = async (req, res) => {
+  try {
+    if (req.cookies.admin != null) {
+      const id_order = req.params.id_order;
+      const { order, orderItems } = await orderService.getById(id_order);
 
-  const account = await userService.findUserById(id_order);
-  return { layout: 'admin-main', admin: account };
+      res.render('admin/orderdetails', {
+        // order,
+        // products,
+        // layout: 'admin-main',
+        // admin: req.cookies.admin,
+      });
+    } else {
+      throw new Error('Unauthorized');
+    }
+  } catch (error) {
+    res.status(500).json(error);
+  }
 };
 
 const markOrderPending = async (orderId, adminCookie) => {

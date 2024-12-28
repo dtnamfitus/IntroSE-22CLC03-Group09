@@ -25,7 +25,6 @@ const router = express.Router();
 // router.post('/login', adminController.checkLogin);
 // router.use('/login', adminController.login);
 // router.use('/logout', adminController.logout);
-// router.use('/list_orders', list_ordersController);
 // router.use('/orderdetails', orderdetailsController);
 // router.use('/accountdetail', accountDetail);
 // router.use('/bandetail', banDetail);

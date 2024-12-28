@@ -9,7 +9,6 @@
     </div>
   </div>
 </div>
-<!-- Page Header End -->
 
 <style>
   .spinner {
@@ -19,7 +18,6 @@
     right: 0;
     bottom: 0;
     background-color: #f9f9f9;
-    /* Màu nền khi loading */
     z-index: 1;
     display: flex;
     align-items: center;
@@ -29,16 +27,12 @@
   .spinner i {
     font-size: 2rem;
     color: #007bff;
-    /* Màu của spinner */
   }
 </style>
 
-<!-- Shop Start -->
 <div class="container-fluid pt-5">
   <div class="row px-xl-5">
-    <!-- Shop Sidebar Start -->
     <div class="col-lg-3 col-md-12">
-      <!-- Price Start -->
       <div class="border-bottom mb-4 pb-4">
         <h5 class="font-weight-semi-bold mb-4">Filter by price</h5>
         <button class="btn d-flex align-items-center text-dark" id="specialButton" data-params='0,10000000'><i
@@ -54,7 +48,6 @@
         <button class="btn d-flex align-items-center text-dark" id="specialButton5" data-params='500000,10000000'><i
             class="fas fa-play mr-2"></i>More than 500.000&#8363;</button>
       </div>
-      <!-- Price End -->
       <div class="border-bottom mb-4 pb-4 navbar-light text-dark">
         <h5 class="font-weight-semi-bold mb-4">Filter by Categories</h5>
         <a href="/customer/products?name=&cat=0&sort=&from=&to=&page=" class="nav-item nav-link text-dark"><i
@@ -65,9 +58,7 @@
         {{/each}}
       </div>
     </div>
-    <!-- Shop Sidebar End -->
 
-    <!-- Shop Product Start -->
     <div id="showProduct" class="col-lg-9 col-md-12">
       <div class="row pb-3">
         <div class="col-12 pb-1">
@@ -90,11 +81,7 @@
         <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
           <div class="card product-item border-0 mb-4">
             <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-              <div class="spinner" id="spinner-{{id}}"
-                style="display: flex; align-items: center; justify-content: center; height: 100%;">
-                <i class="fas fa-spinner fa-spin"></i>
-              </div>
-              <img class="img-fluid w-100" src="{{imageUrl}}" alt="cover" onload="handleImageLoad({{id}})">
+              <img class="img-fluid w-100" src="{{imageUrl}}" alt="cover">
             </div>
             <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
               <h6 class="text-truncate mb-3">{{title}}</h6>
@@ -145,23 +132,5 @@
         {{/if}}
       </div>
     </div>
-    <script>
-      function handleImageLoad(id) {
-        // Ẩn spinner
-        const spinner = document.getElementById(`spinner-${id}`);
-        if (spinner) {
-          spinner.style.display = 'none';
-        }
-
-        // Hiển thị ảnh
-        const img = document.getElementById(`product-img-${id}`);
-        if (img) {
-          img.style.display = 'block';
-        }
-      }
-
-    </script>
-    <!-- Shop Product End -->
   </div>
 </div>
-<!-- Shop End -->

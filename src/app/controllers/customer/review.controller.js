@@ -15,9 +15,9 @@ const createReview = async (req, res) => {
       username: user ? user.name : username,
       comment,
     };
-    const result = await reviewService.createReview(data);
 
-    //update book's rating
+    await reviewService.createReview(data);
+
     const allReviews = await reviewService.getReviewsByBookId(bookId);
     const averageRating = Math.round(
       allReviews.reduce((sum, review) => sum + review.rating, 0) /

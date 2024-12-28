@@ -1,5 +1,8 @@
 const Order = require('../models/order.model');
+const OrderItemList = require('../models/order_item_lists.model');
+const Book = require('../models/book.model');
 const sequelize = require('sequelize');
+
 const orderService = {
   getOrdersByUserId: (userId) => {
     return new Promise(async (resolve, reject) => {
@@ -79,20 +82,27 @@ const orderService = {
       }
     });
   },
-  getById: (id_order) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const order = await Order.findOne({
-          where: {
-            $and: [{ id: id_order }],
+  getById: async (id_order) => {
+    const [order, orderItems] = await Promise.all([
+      Order.findOne({
+        where: {
+          $and: [{ id: id_order }],
+        },
+        raw: true,
+      }),
+      OrderItemList.findAll({
+        where: {
+          orderId: id_order,
+        },
+        include: [
+          {
+            model: Book,
           },
-          raw: true,
-        });
-        resolve(order);
-      } catch (err) {
-        return reject(err);
-      }
-    });
+        ],
+        raw: true,
+      }),
+    ]);
+    return { order, orderItems };
   },
   getAllOrderAscByDate: () => {
     return new Promise(async (resolve, reject) => {

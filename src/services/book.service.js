@@ -25,76 +25,18 @@ const bookService = {
 
   async countBooks(query, from, to) {
     try {
-      const whereConditions = {
-        [Op.and]: [
-          query.name
-            ? { title: { [Op.iLike]: `%${query.name}%` } }
-            : null,
-          query.cat === 0
-            ? { categoryId: { [Op.ne]: null } }
-            : { categoryId: query.cat },
-          { price: { [Op.gte]: from } },
-          { price: { [Op.lte]: to } },
-        ].filter(Boolean),
-      };
-  
-      const count = await Book.count({
-        where: whereConditions,
-      });
-  
-      return count;
-    } catch (error) {
-      throw error;
-    }
-  },  
-
-  async searchBook(query, from, to) {
-    try {
-      // Đảm bảo giá trị mặc định cho query.name và query.cat nếu undefined
-      const name = query.name || ''; // Nếu không có query.name, sử dụng chuỗi rỗng
-      const category = query.cat !== undefined ? query.cat : 0; // Nếu không có query.cat, sử dụng 0
-  
-      // Tạo điều kiện where
-      const whereConditions = {
-        [Op.and]: [
-          name
-            ? { title: { [Op.iLike]: `%${name}%` } } // Tìm kiếm nếu name không rỗng
-            : null,
-          category === 0
-            ? { categoryId: { [Op.ne]: null } } // Nếu category là 0, lấy tất cả các category
-            : { categoryId: category }, // Nếu có category, lọc theo categoryId
-          { price: { [Op.gte]: from } }, // Giá lớn hơn hoặc bằng `from`
-          { price: { [Op.lte]: to } },   // Giá nhỏ hơn hoặc bằng `to`
-        ].filter(Boolean), // Loại bỏ các điều kiện null hoặc undefined
-      };
-  
-      // Truy vấn cơ sở dữ liệu
-      const books = await Book.findAll({
-        where: whereConditions,
-        raw: true,
-      });
-  
-      return books;
-    } catch (error) {
-      throw error; // Ném lỗi để caller xử lý
-    }
-  },
-  
-
-  async searchBookByLimit(query, startingLimit, resultPerPage, from, to) {
-    try {
-      const option = {
-        offset: startingLimit,
-        limit: resultPerPage,
-        raw: true,
-      };
-      console.log(query);
-      if (query.name) {
+      const option = {};
+      if (query.name && query.name !== '' && query.name !== null) {
         option.where = {
           title: { [Op.iLike]: `%${query.name}%` },
         };
       }
-      if (query.cat) {
+      if (
+        query.cat &&
+        query.cat !== 0 &&
+        query.cat !== null &&
+        query.cat !== '0'
+      ) {
         option.where = {
           categoryId: query.cat,
         };
@@ -107,7 +49,79 @@ const bookService = {
           },
         };
       }
-      
+
+      const count = await Book.count({
+        where: option,
+      });
+
+      return count;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async searchBook(query, from, to) {
+    try {
+      // Đảm bảo giá trị mặc định cho query.name và query.cat nếu undefined
+      const name = query.name || ''; // Nếu không có query.name, sử dụng chuỗi rỗng
+      const category = query.cat !== undefined ? query.cat : 0; // Nếu không có query.cat, sử dụng 0
+
+      // Tạo điều kiện where
+      const whereConditions = {
+        [Op.and]: [
+          name
+            ? { title: { [Op.iLike]: `%${name}%` } } // Tìm kiếm nếu name không rỗng
+            : null,
+          category === 0
+            ? { categoryId: { [Op.ne]: null } } // Nếu category là 0, lấy tất cả các category
+            : { categoryId: category }, // Nếu có category, lọc theo categoryId
+          { price: { [Op.gte]: from } }, // Giá lớn hơn hoặc bằng `from`
+          { price: { [Op.lte]: to } }, // Giá nhỏ hơn hoặc bằng `to`
+        ].filter(Boolean), // Loại bỏ các điều kiện null hoặc undefined
+      };
+
+      // Truy vấn cơ sở dữ liệu
+      const books = await Book.findAll({
+        where: whereConditions,
+        raw: true,
+      });
+
+      return books;
+    } catch (error) {
+      throw error; // Ném lỗi để caller xử lý
+    }
+  },
+
+  async searchBookByLimit(query, startingLimit, resultPerPage, from, to) {
+    try {
+      const option = {
+        offset: startingLimit,
+        limit: resultPerPage,
+        raw: true,
+      };
+      if (query.name && query.name !== '' && query.name !== null) {
+        option.where = {
+          title: { [Op.iLike]: `%${query.name}%` },
+        };
+      }
+      if (
+        query.cat &&
+        query.cat !== 0 &&
+        query.cat !== null &&
+        query.cat !== '0'
+      ) {
+        option.where = {
+          categoryId: query.cat,
+        };
+      }
+      if (from && to) {
+        option.where = {
+          price: {
+            [Op.gte]: from,
+            [Op.lte]: to,
+          },
+        };
+      }
       const books = await Book.findAll(option);
       return books;
     } catch (error) {
@@ -154,13 +168,17 @@ const bookService = {
     }
   },
 
-  async searchBookAndSortedByLimit(query, startingLimit, resultPerPage, from, to) {
+  async searchBookAndSortedByLimit(
+    query,
+    startingLimit,
+    resultPerPage,
+    from,
+    to
+  ) {
     try {
       const whereConditions = {
         [Op.and]: [
-          query.name
-            ? { title: { [Op.iLike]: `%${query.name}%` } }
-            : null,
+          query.name ? { title: { [Op.iLike]: `%${query.name}%` } } : null,
           query.cat === 0
             ? { categoryId: { [Op.ne]: null } }
             : { categoryId: query.cat },
@@ -190,13 +208,17 @@ const bookService = {
     }
   },
 
-  async countBookAndSortedByLimit(query, startingLimit, resultPerPage, from, to) {
+  async countBookAndSortedByLimit(
+    query,
+    startingLimit,
+    resultPerPage,
+    from,
+    to
+  ) {
     try {
       const whereConditions = {
         [Op.and]: [
-          query.name
-            ? { title: { [Op.iLike]: `%${query.name}%` } }
-            : null,
+          query.name ? { title: { [Op.iLike]: `%${query.name}%` } } : null,
           query.cat === 0
             ? { categoryId: { [Op.ne]: null } }
             : { categoryId: query.cat },

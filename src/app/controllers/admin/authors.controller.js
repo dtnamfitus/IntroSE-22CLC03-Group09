@@ -4,7 +4,7 @@ const authorService = require('../../../services/author.service');
 const bookService = require('../../../services/book.service');
 const _ = require('lodash');
 
-router.get('/', async (req, res) => {
+async function getAuthors(req, res) {
   try {
     if (req.cookies.admin != null) {
       const { success } = req.query;
@@ -24,39 +24,57 @@ router.get('/', async (req, res) => {
     } else {
       res.redirect('/admin/login');
     }
-  } catch (error) {}
-});
+  } catch (error) {
+    res.render('admin/error500', { layout: 'admin-main' });
+  }
+}
 
-router.post('/create', async (req, res) => {
-  const data = req.body;
+async function createAuthor(req, res) {
   try {
-    const result = await authorService.createAuthor(data.author);
-    return res.redirect('/admin/table_authors');
+    if (req.cookies.admin != null) {
+      await authorService.createAuthor(data.author);
+      return res.redirect('/admin/table_authors');
+    } else {
+      res.redirect('/admin/login');
+    }
+  } catch (error) {
+    res.render('admin/error500', { layout: 'admin-main' });
+  }
+}
+
+async function updateAuthor(req, res) {
+  try {
+    if (req.cookies.admin != null) {
+      const data = req.body;
+      await authorService.updateAuthor(data.name, data.id);
+
+      return res.redirect('/admin/table_authors');
+    } else {
+      res.redirect('/admin/login');
+    }
+  } catch (error) {
+    res.render('admin/error500', { layout: 'admin-main' });
+  }
+}
+
+async function deleteAuthor(req, res) {
+  try {
+    if (req.cookies.admin != null) {
+      const data = req.body;
+      await bookService.deleteBookByAuthor(data.id);
+      await authorService.deleteAuthor(data.id);
+      return res.redirect('/admin/table_authors?success=true');
+    } else {
+      res.redirect('/admin/login');
+    }
   } catch (error) {
     return res.render('admin/error500', { layout: 'admin-main' });
   }
-});
+}
 
-router.post('/update', async (req, res) => {
-  const data = req.body;
-  try {
-    const result = await authorService.updateAuthor(data.name, data.id);
-
-    return res.redirect('/admin/table_authors');
-  } catch (error) {
-    return res.render('admin/error500', { layout: 'admin-main' });
-  }
-});
-
-router.post('/delete', async (req, res) => {
-  const data = req.body;
-  try {
-    const books = await bookService.deleteBookByAuthor(data.id);
-    const result = await authorService.deleteAuthor(data.id);
-    return res.redirect('/admin/table_authors?success=true');
-  } catch (error) {
-    return res.render('admin/error500', { layout: 'admin-main' });
-  }
-});
-
-module.exports = router;
+module.exports = {
+  getAuthors,
+  createAuthor,
+  updateAuthor,
+  deleteAuthor,
+};

@@ -3,6 +3,7 @@ const db = require('../config/database');
 const Author = require('./author.model');
 const Publisher = require('./publisher.model');
 const Category = require('./category.model');
+const OrderItemList = require('./order_item_lists.model');
 
 const Book = db.define(
   'Book',
