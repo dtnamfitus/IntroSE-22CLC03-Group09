@@ -7,6 +7,9 @@
     text-align: center;
     cursor: default;
     min-height: 250px;
+    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); /* Gradient nền */
+    border-radius: 15px; /* Bo tròn góc */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
 }
 
 .hovereffect .overlay {
@@ -23,6 +26,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    border-radius: 15px; /* Bo tròn góc */
 }
 
 .hovereffect img {
@@ -33,6 +37,7 @@
     object-fit: cover;
     width: 100%;
     height: 100%;
+    border-radius: 15px; /* Bo tròn góc */
 }
 
 .hovereffect h2 {
@@ -40,14 +45,14 @@
     color: #fff;
     text-align: center;
     position: relative;
-    font-size: 17px;
+    font-size: 20px; /* Tăng kích thước font */
     background: rgba(0, 0, 0, 0.6);
-    -webkit-transform: translatey(-100px);
-    -ms-transform: translatey(-100px);
-    transform: translatey(-100px);
+    -webkit-transform: translateY(-100px);
+    -ms-transform: translateY(-100px);
+    transform: translateY(-100px);
     -webkit-transition: all 0.2s ease-in-out;
     transition: all 0.2s ease-in-out;
-    padding: 10px;
+    padding: 10px 20px; /* Tăng padding */
 }
 
 .hovereffect a.info {
@@ -61,18 +66,20 @@
     filter: alpha(opacity=0);
     -webkit-transition: all 0.2s ease-in-out;
     transition: all 0.2s ease-in-out;
-    padding: 7px 14px;
+    padding: 10px 20px; /* Tăng padding */
     cursor: pointer;
+    border-radius: 5px; /* Bo tròn góc */
 }
 
 .hovereffect a.info:hover {
-    box-shadow: 0 0 5px #fff;
+    box-shadow: 0 0 10px #fff; /* Tăng hiệu ứng đổ bóng khi hover */
 }
 
 .hovereffect:hover img {
-    -ms-transform: scale(1.2);
-    -webkit-transform: scale(1.2);
-    transform: scale(1.2);
+    -ms-transform: scale(1.2) rotate(3deg); /* Thêm hiệu ứng xoay nhẹ */
+    -webkit-transform: scale(1.2) rotate(3deg); /* Thêm hiệu ứng xoay nhẹ */
+    transform: scale(1.2) rotate(3deg); /* Thêm hiệu ứng xoay nhẹ */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* Đổ bóng mạnh hơn khi hover */
 }
 
 .hovereffect:hover .overlay {
@@ -82,7 +89,7 @@
 
 .hovereffect:hover h2,
 .hovereffect:hover a.info {
-    position:absolute;
+    position: absolute;
     opacity: 1;
     filter: alpha(opacity=100);
 }
@@ -90,4 +97,5 @@
 .hovereffect:hover a.info {
     -webkit-transition-delay: 0.2s;
     transition-delay: 0.2s;
+    background-color: rgba(255, 255, 255, 0.2); /* Thêm nền khi hover */
 }
