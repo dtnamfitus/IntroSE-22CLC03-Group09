@@ -38,6 +38,11 @@ const User = db.define(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
+    dob: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: new Date(),
+    },
   },
   {
     tableName: 'users',

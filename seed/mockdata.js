@@ -5,6 +5,7 @@ const Author = require('./../src/models/author.model');
 const Book = require('./../src/models/book.model');
 const Category = require('./../src/models/category.model');
 const Publisher = require('./../src/models/publisher.model');
+const OrderStatus = require('./../src/models/order_status.model');
 
 const crawledData = require('./data.js');
 
@@ -17,7 +18,7 @@ const db = new Sequelize(
     dialect: 'postgres',
   }
 );
-console.log(process.env)
+console.log(process.env);
 
 db.authenticate()
   .then(() => {
@@ -58,7 +59,7 @@ const mangaCategoriesImages = [
   'https://static0.gamerantimages.com/wordpress/wp-content/uploads/2024/01/best-historical-romance-manhwas.jpg',
   'https://static0.gamerantimages.com/wordpress/wp-content/uploads/2023/10/collage-maker-26-oct-2023-08-31-am-2117.jpg',
   'https://static0.gamerantimages.com/wordpress/wp-content/uploads/2024/05/x-best-martial-arts-manhwa-ranked.jpg',
-  'https://imgix.ranker.com/list_img_v2/3407/2743407/original/best-psychological-thriller-manga'
+  'https://imgix.ranker.com/list_img_v2/3407/2743407/original/best-psychological-thriller-manga',
 ];
 
 const vietnamesePublishers = [
@@ -88,7 +89,9 @@ async function seedPublishers() {
 async function seedCategories() {
   try {
     for (let i = 0; i < mangaCategories.length; i++) {
-      await Category.findOrCreate({ where: { name: mangaCategories[i], img_url: mangaCategoriesImages[i]} }); // Tránh trùng lặp khi chèn
+      await Category.findOrCreate({
+        where: { name: mangaCategories[i], img_url: mangaCategoriesImages[i] },
+      }); // Tránh trùng lặp khi chèn
     }
     console.log('Seed categories successfully');
   } catch (error) {
@@ -144,8 +147,10 @@ async function seedBooks() {
           id: data.id,
           title: data.name,
           authorId: author.id,
-          publisherId: publishers[Math.floor(Math.random() * publishers.length)].id, // Random Publisher
-          categoryId: categories[Math.floor(Math.random() * categories.length)].id, // Random Category
+          publisherId:
+            publishers[Math.floor(Math.random() * publishers.length)].id, // Random Publisher
+          categoryId:
+            categories[Math.floor(Math.random() * categories.length)].id, // Random Category
           releaseYear: Math.floor(Math.random() * (2024 - 2010 + 1)) + 2010, // Năm phát hành ngẫu nhiên
           price: getRandomMultiple(), // Giá mặc định
           description: data.details.description,
@@ -160,19 +165,39 @@ async function seedBooks() {
     console.error('Error seeding books:', error);
   }
 }
-          
+
+async function seedOrderStatus() {
+  try {
+    const status = [
+      'Pending',
+      'Processing',
+      'Delivering',
+      'Completed',
+      'Cancelled',
+    ];
+    for (const name of status) {
+      await OrderStatus.findOrCreate({ where: { name } });
+    }
+    console.log('Seed order status successfully');
+  } catch (error) {
+    console.error('Error seeding order status:', error);
+  }
+}
 
 async function mockDataFromArray() {
   try {
     await clearDatabase(); // Xóa dữ liệu cũ trước khi mock dữ liệu mới
     await seedPublishers(); // Đảm bảo Publisher được seed trước khi sử dụng
-    await seedCategories(); // Đảm bảo Category được seed trước khi sử dụng 
+    await seedCategories(); // Đảm bảo Category được seed trước khi sử dụng
     await seedAuthors(); // Đảm bảo Author được seed trước khi sử dụng
     await seedBooks(); // Đảm bảo Book được seed trước khi sử dụng
+    await seedOrderStatus(); // Đảm bảo OrderStatus được seed trước khi sử dụng
 
     console.log('Data mocked successfully for all entries!');
+    process.exit(0);
   } catch (error) {
     console.error('Error mocking data:', error);
+    process.exit(1);
   }
 }
 

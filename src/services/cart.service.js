@@ -1,15 +1,24 @@
 const { Op } = require('sequelize');
 const Cart = require('../models/cart.model');
+const Book = require('../models/book.model');
 
 const cartService = {
   getCart: (id) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const cart = Cart.findOne({
+        const cart = Cart.findAndCountAll({
           where: {
             userId: { [Op.eq]: id },
           },
+          include: [
+            {
+              model: Book,
+              as: 'book',
+            },
+          ],
+          order: [['createdAt', 'ASC']],
           raw: true,
+          nest: true,
         });
         return resolve(cart);
       } catch (err) {
@@ -20,30 +29,28 @@ const cartService = {
   getCartQuantity: (id) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const cart = await Cart.findOne({
+        const cartQuantity = await Cart.count({
           where: {
             userId: { [Op.eq]: id },
           },
           raw: true,
         });
-        if (!cart) resolve(0);
-        const products = JSON.parse(cart.products);
-        const quantity = products.reduce((acc, value) => {
-          return acc + Number(value.quantity);
-        }, 0);
-        return resolve(quantity);
+        if (!cartQuantity) resolve(0);
+        return resolve(cartQuantity);
       } catch (err) {
         return reject(err);
       }
     });
   },
-
-  createNewCart: (id, productsString) => {
+  getCartByBookId: (userId, bookId) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const cart = await Cart.create({
-          userId: id,
-          products: productsString,
+        const cart = await Cart.findOne({
+          where: {
+            userId: { [Op.eq]: userId },
+            bookId: { [Op.eq]: bookId },
+          },
+          raw: true,
         });
         return resolve(cart);
       } catch (err) {
@@ -51,15 +58,27 @@ const cartService = {
       }
     });
   },
-  updateCart: (id, productsString) => {
+  createNewCart: (data) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const cart = await Cart.create({
+          ...data,
+        });
+        return resolve(cart);
+      } catch (err) {
+        return reject(err);
+      }
+    });
+  },
+  updateCart: (cart_id, data) => {
     return new Promise(async (resolve, reject) => {
       try {
         const cart = await Cart.update(
           {
-            products: productsString,
+            ...data,
           },
           {
-            where: { userId: id },
+            where: { id: cart_id },
           }
         );
         return resolve(cart);
@@ -68,17 +87,43 @@ const cartService = {
       }
     });
   },
-  deleteCart: (id) => {
+  updateCartByQuery: (query, data) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const cart = await Cart.destroy({
-          where: { userId: id },
-        });
+        const cart = await Cart.update(
+          {
+            ...data,
+          },
+          {
+            where: { ...query },
+          }
+        );
         return resolve(cart);
       } catch (err) {
         return reject(err);
       }
     });
+  },
+  deleteCart: async (user_id, book_id) => {
+    try {
+      const cart = await Cart.destroy({
+        where: { userId: user_id, bookId: book_id },
+      });
+      console.log(cart);
+      return cart;
+    } catch (err) {
+      throw new Error(err);
+    }
+  },
+  deleteMultipleCart: async (user_id) => {
+    try {
+      const cart = await Cart.destroy({
+        where: { userId: user_id },
+      });
+      return cart;
+    } catch (err) {
+      throw new Error(err);
+    }
   },
 };
 

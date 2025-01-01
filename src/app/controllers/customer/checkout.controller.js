@@ -1,15 +1,15 @@
 const cartService = require('../../../services/cart.service');
-const bookService = require('../../../services/book.service');
 const orderService = require('../../../services/order.service');
 const orderItemListService = require('../../../services/order_item_lists.service');
+const orderStatusService = require('../../../services/order_status.service');
 const helperService = require('../../../services/helper.service');
 
 const checkOut = async (req, res) => {
   try {
-    let user = req.cookies['user'];
-    if (user == undefined)
+    const user = req.cookies['user'];
+    if (!user) {
       res.render('customer/401', { layout: 'customer-main' });
-    else {
+    } else {
       const address =
         req.body.fname +
         ', ' +
@@ -18,28 +18,14 @@ const checkOut = async (req, res) => {
         req.body.district +
         ', ' +
         req.body.city;
-      if (user != null) {
-        const myCart = await cartService.getCart(user.id);
-        listProductsJson = JSON.parse(myCart.products);
-        let products = [];
-        let subTotal = 0;
-        for (var i = 0; i < listProductsJson.length; i++) {
-          var obj = listProductsJson[i];
-          for (var key in obj) {
-            if (key === 'book_id') {
-              product = await bookService.getBookById(obj[key]);
-              products.push(product);
-            } else {
-              products[i].quantity = obj[key];
-              products[i].total =
-                parseInt(products[i].quantity) * parseInt(products[i].price);
-              subTotal += products[i].total;
-            }
-          }
-        }
-        products = helperService.formatProducts(products);
-        res.render('customer/checkout', { user, products, subTotal, address });
-      }
+      const cart = await cartService.getCart(user.id);
+      const subTotal = cart.rows.reduce((acc, row) => {
+        const price = parseFloat(row.book.price);
+        const quantity = parseInt(row.quantity, 10);
+        return acc + price * quantity;
+      }, 0);
+
+      res.render('customer/checkout', { user, address, cart, subTotal });
     }
   } catch (error) {
     res.render('customer/error401');
@@ -48,25 +34,33 @@ const checkOut = async (req, res) => {
 
 const createOrder = async (req, res) => {
   try {
-    let user = req.cookies['user'];
-    const yourCart = await cartService.getCart(user.id);
-    listProductsJson = JSON.parse(yourCart.products);
-    const newOrder = await orderService.createNewOrder(
-      req.body.address,
-      req.body.total.split('.').join(''),
-      user.phone,
-      user.id
-    );
-    for (var i = 0; i < listProductsJson.length; i++) {
-      obj = listProductsJson[i];
-      const newItemList = await orderItemListService.createNewOne(
-        newOrder.id,
-        obj.quantity,
-        obj.book_id
-      );
-    }
-    const deletedCart = cartService.deleteCart(user.id);
-    res.redirect('/');
+    const user = req.cookies['user'];
+
+    const [cart, orderStatus] = await Promise.all([
+      cartService.getCart(user.id),
+      orderStatusService.getByName('Pending'),
+    ]);
+    const totalPrice = cart.rows.reduce((acc, row) => {
+      const price = parseFloat(row.book.price);
+      const quantity = parseInt(row.quantity, 10);
+      return acc + price * quantity;
+    }, 0);
+    const newOrder = await orderService.createNewOrder({
+      userId: user.id,
+      statusId: orderStatus.id,
+      address: req.body.address,
+      phone: user.phone,
+      totalPrice: totalPrice,
+      note: '',
+    });
+    const orderItems = cart.rows.map((row) => ({
+      orderId: newOrder.id,
+      bookId: row.book.id,
+      quantity: row.quantity,
+    }));
+    await orderItemListService.createOrderItemList(orderItems);
+    await cartService.deleteMultipleCart(user.id);
+    res.redirect('/customer/order_status');
   } catch (error) {
     res.render('customer/error401');
   }

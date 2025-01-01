@@ -42,7 +42,8 @@ const editProfile = async (req, res) => {
   try {
     const body = req.body;
     const { id, oldPassword, ...data } = body;
-    await userService.updateUserById(id, data);
+    const user = await userService.updateUserById(id, data);
+
     return res.redirect('/customer/user/profile?success=true');
   } catch (error) {
     return res.redirect('/customer/user/profile?success=false');
@@ -109,7 +110,7 @@ const getPasswordPage = async (req, res) => {
       orders,
     });
   } catch (error) {
-    return res.render('/customer/error500', {
+    return res.render('customer/error500', {
       cartQuantity,
       categories,
       orders,

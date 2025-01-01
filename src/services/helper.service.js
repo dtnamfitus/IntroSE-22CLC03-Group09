@@ -1,7 +1,7 @@
 const _ = require('lodash');
 
 function formatPrice(price) {
-  return price.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+  return price.toString();
 }
 
 const helperService = {

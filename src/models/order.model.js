@@ -19,11 +19,6 @@ const Order = db.define(
         key: 'id',
       },
     },
-    createdAt: {
-      field: 'created_at',
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
     address: {
       type: DataTypes.STRING(255),
       allowNull: false,

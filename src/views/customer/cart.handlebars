@@ -1,4 +1,3 @@
-<!-- Page Header Start -->
 <div class="container-fluid bg-secondary mb-5">
   <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 150px">
     <h1 class="font-weight-semi-bold text-uppercase mb-3">Shopping Cart</h1>
@@ -9,9 +8,6 @@
     </div>
   </div>
 </div>
-<!-- Script for address -->
-
-<!-- Cart Start -->
 <div class="container-fluid pt-5">
   <div class="row px-xl-5">
     <div class="col-lg-8 table-responsive mb-5">
@@ -26,30 +22,30 @@
           </tr>
         </thead>
         <tbody id="listproduct" class="align-middle">
-          {{#each products}}
+          {{#each cart.rows}}
           <tr>
-            <td class="d-flex justify-content-start"><img src="{{imageUrl}}" alt="" style="width: 50px;"> {{title}}
+            <td class="d-flex justify-content-start"><img src="{{book.imageUrl}}" alt="" style="width: 50px; margin-right: 5px"> {{book.title}}
             </td>
-            <td class="align-middle">{{price}}</td>
+            <td class="align-middle">{{book.price}}</td>
             <td class="align-middle">
               <div class="input-group quantity mx-auto" style="width: 100px;">
                 <div class="input-group-btn">
-                  <button class="btn btn-sm btn-primary btn-minus" value="{{id}}" onclick="decrease(this.value)">
+                  <button class="btn btn-sm btn-primary btn-minus" value="{{book.id}}" onclick="decrease(this.value)">
                     <i class="fa fa-minus"></i>
                   </button>
                 </div>
                 <input type="text" class="form-control form-control-sm bg-secondary text-center" value="{{quantity}}">
                 <div class="input-group-btn">
-                  <button class="btn btn-sm btn-primary btn-plus" value="{{id}}" onclick="increase(this.value)">
+                  <button class="btn btn-sm btn-primary btn-plus" value="{{book.id}}" onclick="increase(this.value)">
                     <i class="fa fa-plus"></i>
                   </button>
                 </div>
               </div>
             </td>
-            <td class="align-middle">{{total}}</td>
+            <td class="align-middle">{{multiply book.price quantity}}</td>
             <td class="align-middle">
-              <button class="btn btn-sm btn-primary" value="{{id}}" onclick="delPro(this.value)">
-                <i class="fa fa-times" name="book_id" value="{{id}}"></i>
+              <button class="btn btn-sm btn-primary" value="{{book.id}}" onclick="delPro(this.value)">
+                <i class="fa fa-times" name="book_id" value="{{book.id}}"></i>
               </button>
             </td>
           </tr>
@@ -91,7 +87,7 @@
           <div class="card-footer border-secondary bg-transparent">
             <div id="summary2" class="d-flex justify-content-between mt-2">
               <h5 class="font-weight-bold">Total</h5>
-              <h5 class="font-weight-bold">{{subTotal}} &#8363; + shipping</h5>
+              <h5 class="font-weight-bold"> &#8363; + shipping</h5>
             </div>
             <button type = "submit" class="btn btn-block btn-primary my-3 py-3" id = "submitCart" disabled="true">Proceed To Checkout</button>
           </div>
@@ -100,4 +96,3 @@
     </div>
   </div>
 </div>
-<!-- Cart End -->

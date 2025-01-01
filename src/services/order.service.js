@@ -2,35 +2,30 @@ const Order = require('../models/order.model');
 const OrderItemList = require('../models/order_item_lists.model');
 const Book = require('../models/book.model');
 const sequelize = require('sequelize');
+const OrderStatus = require('../models/order_status.model');
 
 const orderService = {
   getOrdersByUserId: (userId) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const orders = Order.findAll({
+        const order = await Order.findAll({
           where: {
             userId: userId,
           },
+          order: [['createdAt', 'ASC']],
           raw: true,
+          nest: true,
         });
-        return resolve(orders);
-      } catch (error) {
-        return reject(error);
+        resolve(order);
+      } catch (err) {
+        return reject(err);
       }
     });
   },
-  createNewOrder: (newAddress, subTotal, userPhone, userId) => {
+  createNewOrder: (data) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const d = new Date();
-        const order = Order.create({
-          createtAt: d,
-          address: newAddress,
-          phone: userPhone,
-          totalPrice: subTotal,
-          note: null,
-          userId: userId,
-        });
+        const order = Order.create(data);
         resolve(order);
       } catch (err) {
         return reject(err);
@@ -82,27 +77,36 @@ const orderService = {
       }
     });
   },
-  getById: async (id_order) => {
-    const [order, orderItems] = await Promise.all([
-      Order.findOne({
-        where: {
-          $and: [{ id: id_order }],
-        },
-        raw: true,
-      }),
-      OrderItemList.findAll({
-        where: {
-          orderId: id_order,
-        },
-        include: [
-          {
-            model: Book,
+  getById: (id_order) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const order = await Order.findAll({
+          where: {
+            id: id_order,
           },
-        ],
-        raw: true,
-      }),
-    ]);
-    return { order, orderItems };
+          include: [
+            {
+              model: OrderItemList,
+              as: 'items',
+              include: [
+                {
+                  model: Book,
+                },
+              ],
+            },
+            {
+              model: OrderStatus,
+              as: 'status',
+            },
+          ],
+          raw: true,
+          nest: true,
+        });
+        resolve(order);
+      } catch (err) {
+        return reject(err);
+      }
+    });
   },
   getAllOrderAscByDate: () => {
     return new Promise(async (resolve, reject) => {
@@ -201,6 +205,21 @@ const orderService = {
         return resolve(result);
       } catch (error) {
         return reject(error);
+      }
+    });
+  },
+  getBasicData: (id) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const order = await Order.findAll({
+          where: {
+            id: id,
+          },
+          raw: true,
+        });
+        resolve(order);
+      } catch (err) {
+        return reject(err);
       }
     });
   },

@@ -11,13 +11,11 @@ const fileService = {
           return reject(Error(err));
         }
         if (_.isEmpty(files)) resolve(null);
-        if (!files.myFile.length) {
+        if (!files.myFile && !files.myFiles.length) {
           const file = files.myFile;
           return resolve(file.toJSON());
+        } else {
         }
-        // else {
-
-        // }
       });
     });
   },

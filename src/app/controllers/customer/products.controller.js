@@ -14,9 +14,6 @@ const _ = require('lodash');
 const ITEMS_PER_PAGE = 6;
 
 const getPaginationInfo = (totalItems, currentPage, limit, length = 6) => {
-  console.log('Total items:', totalItems);
-  console.log('Current page:', currentPage);
-  console.log('Limit:', limit);
   const paginator = new Paginator(limit, length);
   return paginator.build(totalItems, currentPage);
 };
@@ -146,7 +143,7 @@ const getProductDetail = async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching product details:', error);
-    res.render('customer/error500', { cartQuantity, orders });
+    res.render('customer/error500', { orders });
   }
 };
 

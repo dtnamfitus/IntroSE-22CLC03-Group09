@@ -58,7 +58,6 @@ const validateRegistrationData = async ({
   return errors;
 };
 
-
 const getRegisterPage = async (req, res) => {
   try {
     const categories = await categoryService.getAllCategories();
@@ -111,9 +110,7 @@ const register = async (req, res) => {
   } catch (error) {
     console.error('Error during registration:', error);
     res.render('customer/register', {
-      err: [
-        { message: error },
-      ],
+      err: [{ message: error }],
       categories,
     });
   }

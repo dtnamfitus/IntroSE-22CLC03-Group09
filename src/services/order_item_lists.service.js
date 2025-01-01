@@ -95,6 +95,16 @@ const orderItemListService = {
       }
     });
   },
+  createOrderItemList: (orderItems) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const result = await OrderItemList.bulkCreate(orderItems);
+        return resolve(result);
+      } catch (error) {
+        return reject(error);
+      }
+    });
+  },
 };
 
 module.exports = orderItemListService;

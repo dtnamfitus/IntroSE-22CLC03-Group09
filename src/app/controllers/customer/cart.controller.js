@@ -1,93 +1,61 @@
-const express = require('express');
-const router = express.Router();
 const cartService = require('../../../services/cart.service');
-const bookService = require('../../../services/book.service');
 const _ = require('lodash');
-const helperService = require('../../../services/helper.service');
-const orderService = require('../../../services/order.service');
 
-const getCart = async (req, res, next) => {
+const getCart = async (req, res) => {
   try {
-    let user = req.cookies['user'];
-    const orders = user ? await orderService.getOrdersByUserId(user.id) : [];
+    const user = req.cookies['user'];
     if (user == undefined)
-      res.render('customer/error401', { layout: 'customer-main' });
+      return res.render('customer/error401', { layout: 'customer-main' });
     else {
-      let products = [];
-      let subTotal = 0;
+      const cart = await cartService.getCart(user.id);
 
-      const yourCart = await cartService.getCart(user.id);
-      if (!yourCart) {
+      if (!cart || cart.rows.length === 0) {
         return res.render('customer/cart', {
           user,
-          products,
-          subTotal,
-          orders,
-          cartQuantity: 0,
+          subTotal: 0,
+          cart: { rows: [] },
+          layout: 'customer-main',
         });
       }
+      const subTotal = cart.rows.reduce((acc, row) => {
+        const price = parseFloat(row.book.price);
+        const quantity = parseInt(row.quantity, 10);
+        return acc + price * quantity;
+      }, 0);
 
-      const cartQuantity = await cartService.getCartQuantity(user.id);
-      listProductsJson = JSON.parse(yourCart.products);
-
-      for (let i = 0; i < listProductsJson.length; i++) {
-        let obj = listProductsJson[i];
-        let product = await bookService.getBookById(obj.book_id);
-        products.push(product);
-        products[i].quantity = obj.quantity;
-        products[i].total =
-          parseInt(obj.quantity) * Math.trunc(parseInt(products[i].price));
-        subTotal += products[i].total;
-      }
-      products = helperService.formatProducts(products);
-      res.render('customer/cart', {
+      return res.render('customer/cart', {
         user,
         layout: 'customer-main',
-        products,
+        cart,
         subTotal,
-        cartQuantity,
-        orders,
       });
     }
   } catch (error) {
-    res.render('/customer/error500');
+    res.render('customer/error500');
   }
 };
 
 const addToCart = async (req, res) => {
   try {
-    let message = '';
-    let user = req.cookies['user'];
+    const user = req.cookies['user'];
     const params = { book_id: req.body.id, quantity: '1' };
-    const book_id_check = params.book_id;
-    const checkExistCart = await cartService.getCart(user.id);
-    if (checkExistCart == null) {
-      const addedCart = await cartService.createNewCart(
-        user.id,
-        '[' + JSON.stringify(params) + ']'
-      );
-      message = 'Successful';
+    const existCart = await cartService.getCartByBookId(
+      user.id,
+      params.book_id
+    );
+    if (existCart == null) {
+      await cartService.createNewCart({
+        userId: user.id,
+        bookId: params.book_id,
+        quantity: params.quantity,
+      });
     } else {
       // check wheather book is existing in your cart or not
-      var check = true;
-      const listBook = JSON.parse(checkExistCart.products);
-      for (var i = 0; i < listBook.length; i++) {
-        if (parseInt(listBook[i].book_id) == book_id_check) {
-          check = false;
-          message = 'Already in your cart';
-        }
-      }
-      if (check == true) {
-        const productsJson = JSON.parse(checkExistCart.products);
-        productsJson.push(params);
-        const updatedCart = await cartService.updateCart(
-          user.id,
-          JSON.stringify(productsJson)
-        );
-        message = 'Successful';
-      }
+      await cartService.updateCart(existCart.id, {
+        quantity: existCart.quantity + 1,
+      });
     }
-    res.json({ msg: message });
+    res.json({ msg: 'Thêm sản phẩm thành công' });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -97,20 +65,8 @@ const removeFromCart = async (req, res) => {
   try {
     let user = req.cookies['user'];
     const book_id = req.body.id;
-    const cart = await cartService.getCart(user.id);
-    const productsJson = JSON.parse(cart.products);
-    var productsJsonRemove = [];
-    for (var i = 0; i < productsJson.length; i++) {
-      var obj = productsJson[i];
-      if (obj.book_id == book_id) continue;
-      productsJsonRemove.push(obj);
-    }
-    const updatedCart = await cartService.updateCart(
-      user.id,
-      JSON.stringify(productsJsonRemove)
-    );
-    message = 'Successful';
-    res.json({ msg: message });
+    await cartService.deleteCart(user.id, parseInt(book_id));
+    res.json({ msg: 'Xoá khỏi giỏ hàng thành công' });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -118,44 +74,46 @@ const removeFromCart = async (req, res) => {
 
 const increaseQuantity = async (req, res) => {
   try {
-    let user = req.cookies['user'];
-
-    const book_id = req.body.id;
-    const cart = await cartService.getCart(user.id);
-    const productsJson = JSON.parse(cart.products);
-    var newProductsJson = [];
-    for (var i = 0; i < productsJson.length; i++) {
-      var obj = productsJson[i];
-      if (obj.book_id == book_id) {
-        obj.quantity = parseInt(obj.quantity) + 1;
-      }
-      newProductsJson.push(obj);
+    const user = req.cookies['user'];
+    const existCart = await cartService.getCartByBookId(user.id, req.body.id);
+    if (existCart == null) {
+      return res.json({ msg: 'Không tìm thấy sản phẩm trong giỏ hàng' });
     }
-    await cartService.updateCart(user.id, JSON.stringify(newProductsJson));
-    message = 'Successful';
-    res.json({ msg: message });
+    await cartService.updateCartByQuery(
+      {
+        userId: user.id,
+        bookId: req.body.id,
+      },
+      {
+        quantity: existCart.quantity + 1,
+      }
+    );
+    return res.json({ msg: 'Thành công' });
   } catch (error) {}
 };
 
 const decreaseQuantity = async (req, res) => {
   try {
-    let user = req.cookies['user'];
-    const book_id = req.body.id;
-    const cart = await cartService.getCart(user.id);
-    const productsJson = JSON.parse(cart.products);
-    var newProductsJson = [];
-    for (var i = 0; i < productsJson.length; i++) {
-      var obj = productsJson[i];
-      if (obj.book_id == book_id) {
-        if (parseInt(obj.quantity) > 1) {
-          obj.quantity = parseInt(obj.quantity) - 1;
-        }
-      }
-      newProductsJson.push(obj);
+    const user = req.cookies['user'];
+    const existCart = await cartService.getCartByBookId(user.id, req.body.id);
+    if (existCart == null) {
+      return res.json({ msg: 'Không tìm thấy sản phẩm trong giỏ hàng' });
     }
-    await cartService.updateCart(user.id, JSON.stringify(newProductsJson));
-    const message = 'Successful';
-    res.json({ msg: message });
+    if (existCart.quantity === 1) {
+      await cartService.deleteCart(user.id, req.body.id);
+      return res.json({ msg: 'Xoá khỏi giỏ hàng thành công' });
+    } else {
+      await cartService.updateCartByQuery(
+        {
+          userId: user.id,
+          bookId: req.body.id,
+        },
+        {
+          quantity: existCart.quantity - 1,
+        }
+      );
+      return res.json({ msg: 'Thành công' });
+    }
   } catch (error) {}
 };
 

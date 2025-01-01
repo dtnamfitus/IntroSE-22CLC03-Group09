@@ -6,6 +6,7 @@ const path = require('path');
 const router = require('./routes');
 const db = require('./config/database');
 const cookieParser = require('cookie-parser');
+const defineAssociations = require('./models/associations');
 
 require('./models/order.model');
 require('./models/order_item_lists.model');
@@ -17,6 +18,7 @@ require('./models/publisher.model');
 require('./models/user.model');
 require('./models/review.model');
 require('./models/order_status.model');
+defineAssociations();
 
 const helper = hbs.create({});
 helper.handlebars.registerHelper(
@@ -31,6 +33,9 @@ helper.handlebars.registerHelper(
     return accum;
   }
 );
+helper.handlebars.registerHelper('multiply', function (a, b) {
+  return a * b;
+});
 
 const app = express();
 const port = process.env.PORT;

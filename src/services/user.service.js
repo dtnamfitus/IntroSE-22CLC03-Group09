@@ -32,20 +32,35 @@ const userService = {
     });
   },
 
-  updateUserById: (id, data) => {
+  updateUserById: async (id, data) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const result = await User.update(data, {
+        const validFields = ['name', 'password', 'phone', 'avatarUrl', 'dob'];
+
+        const filteredData = Object.keys(data)
+          .filter((key) => validFields.includes(key))
+          .reduce((obj, key) => {
+            obj[key] = data[key];
+            return obj;
+          }, {});
+
+        if (Object.keys(filteredData).length === 0) {
+          return reject(new Error('No valid fields to update'));
+        }
+
+        const result = await User.update(filteredData, {
           where: {
             id: id,
           },
         });
+
         return resolve(result);
       } catch (error) {
         return reject(error);
       }
     });
   },
+
   findUser: (email, pass) => {
     return new Promise(async (resolve, reject) => {
       try {
